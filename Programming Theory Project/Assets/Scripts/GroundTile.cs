@@ -9,6 +9,10 @@ public class GroundTile : MonoBehaviour
     [SerializeField]
     private bool canBuild;
     public GameObject Menu;
+    public GameObject BuildingPf;
+    public int buttonIndex;
+    [SerializeField]
+    Vector3 offset = new Vector3(0, 0,0);
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +31,14 @@ public class GroundTile : MonoBehaviour
         if(canBuild)
         {
             Menu.SetActive(true);
+        }
+        else
+        {
+            if(buttonIndex!=0)
+            {
+                Instantiate(BuildingPf, transform.position+offset, BuildingPf.transform.rotation);
+            }
+                Menu.SetActive(false);
         }
     }
 

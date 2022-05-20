@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
+    public GameObject UnitPf;
+    public Transform SpawnPoint;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,9 +28,13 @@ public class Building : MonoBehaviour
 
     }
 
+    private void OnMouseDown()
+    {
+        CreateUnit();
+    }
     private void CreateUnit()
     {
-
+        Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);
     }
     private void GetDestroyed()
     {

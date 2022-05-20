@@ -78,13 +78,18 @@ public abstract class Unit : MonoBehaviour
         m_Agent.acceleration = 999;
         m_Agent.angularSpeed = 999;
     }
-   
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position + transform.forward * Range,transform.lossyScale.x*2);
+    }
     // Update is called once per frame
     void Update()
     {
+        
         var ray = new Ray(this.transform.position, this.transform.forward);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 2))
+        if (Physics.SphereCast(transform.position, transform.lossyScale.x,this.transform.forward, out hit, Range))
         {
             m_Target = hit.transform.gameObject.GetComponentInParent<Unit>();
         }
@@ -146,9 +151,9 @@ public abstract class Unit : MonoBehaviour
     public virtual void Die()
     {
         // reset Marker 
-        if(gameObject.transform.childCount!=0)
+        if(this.transform.childCount!=0)
         {
-            gameObject.transform.GetChild(0).gameObject.transform.parent = null;
+            this.transform.GetChild(0).gameObject.transform.parent = null;
         }
         Destroy(uiRef.gameObject);
             Destroy(gameObject);
