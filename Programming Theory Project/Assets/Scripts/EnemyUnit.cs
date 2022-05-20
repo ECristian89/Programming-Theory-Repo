@@ -5,6 +5,11 @@ using UnityEngine;
 // INHERITANCE
 public class EnemyUnit : Unit
 {
+    protected override void TargetInRange()
+    {
+        throw new System.NotImplementedException();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

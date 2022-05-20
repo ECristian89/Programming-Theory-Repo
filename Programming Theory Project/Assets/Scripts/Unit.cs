@@ -1,11 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Unit : MonoBehaviour
+
+
+[RequireComponent(typeof(NavMeshAgent))]
+public abstract class Unit : MonoBehaviour
 {
-    private int HitPoints { get; set; }
+    private int _HitPoints { get; set; }
+    public int HitPoints;
 
+    public float Speed = 3f;
+    protected NavMeshAgent m_Agent;
+    protected Unit m_Target;
+
+
+    private void Awake()
+    {
+        m_Agent = GetComponent<NavMeshAgent>();
+        m_Agent.speed = Speed;
+        m_Agent.acceleration = 999;
+        m_Agent.angularSpeed = 999;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -19,16 +36,26 @@ public class Unit : MonoBehaviour
     }
 
     // method to move on the NavMesh
-    private void Move()
+    public virtual void GoTo(Unit target)
     {
-
+        m_Target = target;
+        if(m_Target !=null)
+        {
+            m_Agent.SetDestination(m_Target.transform.position);
+            m_Agent.isStopped = false;
+        }
     }
 
-    // check if a valit target is in range
-    private void ScanValidTarget()
+    // POLYMORPHISM
+    public virtual void GoTo(Vector3 position)
     {
-
+        m_Target = null;
+        m_Agent.SetDestination(position);
+        m_Agent.isStopped = false;
     }
+
+    // ABSTRACTION
+    protected abstract void TargetInRange();
 
     private void Attack(int AttackPower)
     {
