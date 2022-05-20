@@ -28,7 +28,7 @@ public class UserControl : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             // collider could be children of the unit, so we make sure to check in the parent
-            var unit = hit.collider.GetComponentInParent<Unit>();
+            var unit = hit.collider.GetComponentInParent<PlayerUnit>();
             m_Selected = unit;
         }
     }
@@ -48,8 +48,7 @@ public class UserControl : MonoBehaviour
             else
             {
                 m_Selected.GoTo(hit.point);
-            }
-            Debug.Log(unit);
+            }            
         }
     }
    

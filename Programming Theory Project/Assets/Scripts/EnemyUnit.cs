@@ -5,20 +5,21 @@ using UnityEngine;
 // INHERITANCE
 public class EnemyUnit : Unit
 {
+    private void Start()
+    {
+        InitializeUnitStats(100, 60, 2);
+    }
     protected override void TargetInRange()
     {
-        throw new System.NotImplementedException();
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+        if (m_Target.GetComponentInParent<PlayerUnit>())
+        {
+            if (!isAttacking)
+            {
+                isAttacking = true;
+                StartCoroutine(base.InitiateAttack(AttackPower, AttackSpeed));
+            }
+        }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 }

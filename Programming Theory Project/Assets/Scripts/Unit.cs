@@ -8,30 +8,96 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour
 {
-    private int _HitPoints { get; set; }
-    public int HitPoints;
+    // ENCAPSULATION
+    private int m_MaxHitPoints;
+    public int MaxHitPoints
+    {
+        get { return m_MaxHitPoints; }
+        set { m_MaxHitPoints = value; }
+    }
+    private int m_HitPoints;
+    public int HitPoints
+    {
+        get { return m_HitPoints; }
+        set 
+        { 
+            if(value<1)
+            {
+                Debug.LogError("can't set a negative value for HitPoints");
+            }
+            else
+            {
+                m_HitPoints = value; 
+            }
+        }
+    }
+    private int m_AttackPower;
+    protected int AttackPower
+    {
+        get { return m_AttackPower; }
+        set { if (value<1)
+            {
+                Debug.LogError("can't set a negative value for AttackPower");
+            }
+        else
+            {
+                m_AttackPower = value;
+            }
+        }
+    }
+    private float m_AttackSpeed;
+    protected float AttackSpeed
+    {
+        get { return m_AttackSpeed; }
+        set { if (value < 0.1f)
+            {
+                Debug.Log("can't set an AttackSPeed lower than 0.1");
+            }
+        else
+            {
+                m_AttackSpeed = value;
+            }
+        }
+    }
 
+    protected bool isAttacking;
+    
     public float Speed = 3f;
+    public float Range = 2.0f;
     protected NavMeshAgent m_Agent;
+    [SerializeField]
     protected Unit m_Target;
 
+    private HitPointsSync uiRef;
+    public GameObject HitPoint_pf;  
 
     private void Awake()
-    {
+    {        
         m_Agent = GetComponent<NavMeshAgent>();
         m_Agent.speed = Speed;
         m_Agent.acceleration = 999;
         m_Agent.angularSpeed = 999;
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+   
     // Update is called once per frame
     void Update()
     {
+        var ray = new Ray(this.transform.position, this.transform.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 2))
+        {
+            m_Target = hit.transform.gameObject.GetComponentInParent<Unit>();
+        }
+
+        if (m_Target != null)
+        {
+            float distance = Vector3.Distance(m_Target.transform.position, transform.position);            
+            if (distance < Range)
+            {                
+                m_Agent.isStopped = true;
+                TargetInRange();
+            }
+        }
         
     }
 
@@ -57,23 +123,59 @@ public abstract class Unit : MonoBehaviour
     // ABSTRACTION
     protected abstract void TargetInRange();
 
-    private void Attack(int AttackPower)
+    public virtual void Attack(int AttackPower,Unit target)
     {
-
+        if(target!=null)
+        {
+        target.TakeDamage(AttackPower);
+        Debug.Log($"{target} was attacked with {AttackPower} attack power.");
+        Debug.Log($"{target} HP is: {target.HitPoints}");
+        }
     }
 
-    private void TakeDamage()
+    public virtual void TakeDamage(int damage)
     {
-
+        m_HitPoints -= damage;
+        uiRef.UpdateValue(MaxHitPoints, HitPoints);
+        if(m_HitPoints<=0)
+        { 
+            Die();
+        }
     }
 
-    private void Die()
+    public virtual void Die()
     {
-
+        // reset Marker 
+        if(gameObject.transform.childCount!=0)
+        {
+            gameObject.transform.GetChild(0).gameObject.transform.parent = null;
+        }
+        Destroy(uiRef.gameObject);
+            Destroy(gameObject);
     }
 
-    private void Upgrade()
+    public virtual void Upgrade()
     {
 
+    }   
+
+    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed)
+    {
+        yield return new WaitForSeconds(attackSpeed);
+        Attack(attackPower, m_Target);
+        isAttacking = false;
     }
+
+    // use this in child objects to initialize
+    protected void InitializeUnitStats(int hitPoints, int attackPower, float attackSpeed)
+    {
+        HitPoints = hitPoints;
+        AttackPower = attackPower;
+        AttackSpeed = attackSpeed;
+        MaxHitPoints = hitPoints;
+        var hpUi = Instantiate(HitPoint_pf, transform.position, HitPoint_pf.transform.rotation);
+        uiRef = hpUi.GetComponentInChildren<HitPointsSync>();
+        hpUi.transform.GetComponent<HitPointsSync>().SetFollowTarget(gameObject);
+    }
+
 }
