@@ -4,19 +4,22 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
+    private int m_MaxHitPoints;
+    public int MaxHitPoints 
+    {
+        get { return m_MaxHitPoints; }
+        set { m_MaxHitPoints = value; }
+    }
+    private int m_HitPoints;
+    public int HitPoints 
+    {
+        get {return m_HitPoints; }
+        set {m_HitPoints = value; }
+    }
     public GameObject UnitPf;
     public Transform SpawnPoint;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    private HitPointsSync uiRef;
+    public GameObject HitPoint_pf;      
 
     private void ScanEnemy()
     {
@@ -26,22 +29,34 @@ public class Building : MonoBehaviour
     private void AutoAttack()
     {
 
-    }
-
-    private void OnMouseDown()
-    {
-        CreateUnit();
-    }
-    private void CreateUnit()
+    }    
+    public virtual void CreateUnit()
     {
         Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);
     }
     private void GetDestroyed()
     {
-
+        Destroy(uiRef.gameObject);
+        Destroy(gameObject);
     }
     public virtual void TakeDamage(int damage)
     {
-        Debug.Log($"Building took {damage} damage");
+        m_HitPoints -= damage;
+        uiRef.UpdateValue(MaxHitPoints, HitPoints);            
+        if (m_HitPoints <=0)
+        {
+            Debug.Log("Building is destroyed");
+            GetDestroyed();
+        }
+    }
+    protected void HandleVisual()
+    {
+        Util.AddHitPointVisual(HitPoint_pf, transform, ref uiRef,2f);
+    }
+
+    protected void InitializeStats(int HP)
+    {
+        HitPoints = HP;
+        MaxHitPoints = HitPoints;
     }
 }

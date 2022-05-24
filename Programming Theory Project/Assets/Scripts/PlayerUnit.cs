@@ -35,7 +35,7 @@ public class PlayerUnit : Unit
             else
             {
                 // set the building in range as target
-                if (m_BTarget.GetComponentInParent<Building>())
+                if (m_BTarget.GetComponentInParent<EnemyBuilding>())
                 {
                     if (!isAttacking)
                     {

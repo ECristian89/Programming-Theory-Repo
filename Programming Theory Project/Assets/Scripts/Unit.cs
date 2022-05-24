@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-
-
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour
 {
@@ -69,7 +67,7 @@ public abstract class Unit : MonoBehaviour
     protected Unit m_Target;
     [SerializeField]
     protected Building m_BTarget;
-
+    [SerializeField]
     private HitPointsSync uiRef;
     public GameObject HitPoint_pf;  
 
@@ -96,14 +94,13 @@ public abstract class Unit : MonoBehaviour
             m_BTarget= hit.transform.gameObject.GetComponentInParent<Building>();
         }
 
-        CheckTarget(m_Target,m_BTarget);
-        
+        CheckTarget(m_Target,m_BTarget);        
     }
     
     protected void CheckTarget(Unit target, Building Btarget)
     {
         if (m_Target != null)
-        {
+        {            
             float distance = Vector3.Distance(m_Target.transform.position, transform.position);
             if (distance < Range)
             {
@@ -114,7 +111,7 @@ public abstract class Unit : MonoBehaviour
         else if(m_BTarget!=null)
         {
             float distance = Vector3.Distance(m_BTarget.transform.position, transform.position);
-            if (distance < Range)
+            if (distance < Range*2)
             {
                 m_Agent.isStopped = true;
                 TargetInRange();
@@ -193,6 +190,7 @@ public abstract class Unit : MonoBehaviour
         isAttacking = false;
     }
 
+    // overload with building type
     protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Building target)
     {
         yield return new WaitForSeconds(attackSpeed);
@@ -207,9 +205,13 @@ public abstract class Unit : MonoBehaviour
         AttackPower = attackPower;
         AttackSpeed = attackSpeed;
         MaxHitPoints = hitPoints;
-        var hpUi = Instantiate(HitPoint_pf, transform.position, HitPoint_pf.transform.rotation);
+
+        // create the visual HitPoint object for visual feedback
+       /* var hpUi = Instantiate(HitPoint_pf, transform.position, HitPoint_pf.transform.rotation);
         uiRef = hpUi.GetComponentInChildren<HitPointsSync>();
         hpUi.transform.GetComponent<HitPointsSync>().SetFollowTarget(gameObject);
+       */
+        Util.AddHitPointVisual(HitPoint_pf, transform,ref uiRef);
     }
 
 }

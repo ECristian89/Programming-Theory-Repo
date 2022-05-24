@@ -31,4 +31,8 @@ public class HitPointsSync : MonoBehaviour
     {
         followTarget = obj.transform;
     }
+    public void SetHeight(float distance)
+    {
+        offset = new Vector3(0, distance, 0);
+    }
 }

@@ -18,13 +18,7 @@ public class GroundTile : MonoBehaviour
     {
         rend = GetComponent<Renderer>();
         m_color = rend.material.color;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    }    
 
     private void OnMouseDown()
     {
@@ -37,6 +31,7 @@ public class GroundTile : MonoBehaviour
             if(buttonIndex!=0)
             {
                 Instantiate(BuildingPf, transform.position+offset, BuildingPf.transform.rotation);
+                buttonIndex = 0;
             }
                 Menu.SetActive(false);
         }
@@ -44,7 +39,10 @@ public class GroundTile : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        rend.material.color = new Color32(50, 200, 172,255);
+        if (canBuild)
+            rend.material.color = new Color32(50, 200, 172, 255);
+        else
+            rend.material.color = new Color32(150, 50, 172, 255);
     }
 
     private void OnMouseExit()
