@@ -64,9 +64,11 @@ public abstract class Unit : MonoBehaviour
     
     public float Speed = 3f;
     public float Range = 2.0f;
-    protected NavMeshAgent m_Agent;
+    protected NavMeshAgent m_Agent;    
     [SerializeField]
     protected Unit m_Target;
+    [SerializeField]
+    protected Building m_BTarget;
 
     private HitPointsSync uiRef;
     public GameObject HitPoint_pf;  
@@ -85,25 +87,39 @@ public abstract class Unit : MonoBehaviour
     }
     // Update is called once per frame
     void Update()
-    {
-        
+    {        
         var ray = new Ray(this.transform.position, this.transform.forward);
         RaycastHit hit;
         if (Physics.SphereCast(transform.position, transform.lossyScale.x,this.transform.forward, out hit, Range))
         {
             m_Target = hit.transform.gameObject.GetComponentInParent<Unit>();
+            m_BTarget= hit.transform.gameObject.GetComponentInParent<Building>();
         }
 
+        CheckTarget(m_Target,m_BTarget);
+        
+    }
+    
+    protected void CheckTarget(Unit target, Building Btarget)
+    {
         if (m_Target != null)
         {
-            float distance = Vector3.Distance(m_Target.transform.position, transform.position);            
+            float distance = Vector3.Distance(m_Target.transform.position, transform.position);
             if (distance < Range)
-            {                
+            {
                 m_Agent.isStopped = true;
                 TargetInRange();
             }
         }
-        
+        else if(m_BTarget!=null)
+        {
+            float distance = Vector3.Distance(m_BTarget.transform.position, transform.position);
+            if (distance < Range)
+            {
+                m_Agent.isStopped = true;
+                TargetInRange();
+            }
+        }
     }
 
     // method to move on the NavMesh
@@ -137,6 +153,17 @@ public abstract class Unit : MonoBehaviour
         Debug.Log($"{target} HP is: {target.HitPoints}");
         }
     }
+    
+    //POLYMORPHISM
+    // overload Attack method to take in either a Unit type or Building type as target
+    public virtual void Attack(int AttackPower, Building target)
+    {
+        if (target != null)
+        {
+            target.TakeDamage(AttackPower);
+            Debug.Log($"{target} was attacked with {AttackPower} attack power.");            
+        }
+    }
 
     public virtual void TakeDamage(int damage)
     {
@@ -157,17 +184,19 @@ public abstract class Unit : MonoBehaviour
         }
         Destroy(uiRef.gameObject);
             Destroy(gameObject);
+    }    
+
+    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Unit target)
+    {
+        yield return new WaitForSeconds(attackSpeed);        
+        Attack(attackPower, target);
+        isAttacking = false;
     }
 
-    public virtual void Upgrade()
-    {
-
-    }   
-
-    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed)
+    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Building target)
     {
         yield return new WaitForSeconds(attackSpeed);
-        Attack(attackPower, m_Target);
+        Attack(attackPower, target);
         isAttacking = false;
     }
 

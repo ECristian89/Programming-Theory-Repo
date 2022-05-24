@@ -40,4 +40,8 @@ public class Building : MonoBehaviour
     {
 
     }
+    public virtual void TakeDamage(int damage)
+    {
+        Debug.Log($"Building took {damage} damage");
+    }
 }

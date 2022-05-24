@@ -19,17 +19,32 @@ public class PlayerUnit : Unit
         m_CurrentTarget = null;
     }
     protected override void TargetInRange()
-    {
-       
-
-        if (m_Target.GetComponentInParent<EnemyUnit>())
-        {
-            if(!isAttacking)
+    {       
+            if (m_Target != null)
             {
-            isAttacking = true;
-                StartCoroutine(base.InitiateAttack(AttackPower,AttackSpeed));
+                // set the enemy unit in range as target
+                if (m_Target.GetComponentInParent<EnemyUnit>())
+                {
+                    if (!isAttacking)
+                    {
+                        isAttacking = true;
+                        StartCoroutine(base.InitiateAttack(AttackPower, AttackSpeed, m_Target));
+                    }
+                }
             }
-        }        
+            else
+            {
+                // set the building in range as target
+                if (m_BTarget.GetComponentInParent<Building>())
+                {
+                    if (!isAttacking)
+                    {
+                        isAttacking = true;
+                        StartCoroutine(base.InitiateAttack(AttackPower, AttackSpeed, m_BTarget));
+                    }
+                }
+            }
+               
         
     }    
     
