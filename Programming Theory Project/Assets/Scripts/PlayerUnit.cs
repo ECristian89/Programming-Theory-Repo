@@ -5,9 +5,8 @@ using UnityEngine;
 // INHERITANCE
 // Subclass of Unit that will attack enemy units in range
 public class PlayerUnit : Unit
-{
-    private Unit m_CurrentTarget; 
-
+{    
+   
 
     private void Start()
     {
@@ -16,7 +15,8 @@ public class PlayerUnit : Unit
     public override void GoTo(Vector3 position)
     {
         base.GoTo(position);
-        m_CurrentTarget = null;
+        m_Target = null;
+        m_BTarget = null;
     }
     protected override void TargetInRange()
     {       
@@ -32,7 +32,7 @@ public class PlayerUnit : Unit
                     }
                 }
             }
-            else
+            else if(m_BTarget!=null)
             {
                 // set the building in range as target
                 if (m_BTarget.GetComponentInParent<EnemyBuilding>())

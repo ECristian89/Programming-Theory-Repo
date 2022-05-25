@@ -51,10 +51,10 @@ public class Building : MonoBehaviour
     }
     protected void HandleVisual()
     {
-        Util.AddHitPointVisual(HitPoint_pf, transform, ref uiRef,2f);
+        Util.AddHitPointVisual(HitPoint_pf, transform, ref uiRef,transform.lossyScale.y);
     }
 
-    protected void InitializeStats(int HP)
+    protected void InitializeBuildingStats(int HP)
     {
         HitPoints = HP;
         MaxHitPoints = HitPoints;

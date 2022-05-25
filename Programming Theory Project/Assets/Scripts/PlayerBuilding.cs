@@ -8,7 +8,7 @@ public class PlayerBuilding : Building
     void Start()
     {
         base.HandleVisual();
-        InitializeStats(600);
+        InitializeBuildingStats(600);
     }
 
     // Update is called once per frame

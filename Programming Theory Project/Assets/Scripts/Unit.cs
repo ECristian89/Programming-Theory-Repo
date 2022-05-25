@@ -58,18 +58,19 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
-    protected bool isAttacking;
-    
     public float Speed = 3f;
-    public float Range = 2.0f;
+    public float SRange = 8.0f; // Scan range
+    public float AtkRange;  // Attacking Range
+    protected bool isAttacking;    
     protected NavMeshAgent m_Agent;    
     [SerializeField]
     protected Unit m_Target;
     [SerializeField]
-    protected Building m_BTarget;
-    [SerializeField]
+    protected Building m_BTarget;    
     private HitPointsSync uiRef;
-    public GameObject HitPoint_pf;  
+    public GameObject HitPoint_pf; 
+    private Collider[] ScannedTargets;
+    public LayerMask ScanLayer; // the layer to scan hostile targets
 
     private void Awake()
     {        
@@ -81,28 +82,37 @@ public abstract class Unit : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position + transform.forward * Range,transform.lossyScale.x*2);
+        Gizmos.DrawWireSphere(transform.position +transform.forward*1.0f,transform.lossyScale.x*2*SRange);        
     }
     // Update is called once per frame
     void Update()
-    {        
-        var ray = new Ray(this.transform.position, this.transform.forward);
-        RaycastHit hit;
-        if (Physics.SphereCast(transform.position, transform.lossyScale.x,this.transform.forward, out hit, Range))
-        {
-            m_Target = hit.transform.gameObject.GetComponentInParent<Unit>();
-            m_BTarget= hit.transform.gameObject.GetComponentInParent<Building>();
-        }
+    {
+        ScanTargets(); 
+             
+    }
 
-        CheckTarget(m_Target,m_BTarget);        
+    // Check if any hostile targets are in the view range
+    protected virtual void ScanTargets()
+    {
+        ScannedTargets = Physics.OverlapSphere(transform.position, SRange,ScanLayer);
+
+        foreach (var item in ScannedTargets)
+        {
+            m_Target = item.transform.gameObject.GetComponentInParent<Unit>();
+            m_BTarget = item.transform.gameObject.GetComponentInParent<Building>();
+            CheckTarget(m_Target, m_BTarget);
+        }
     }
     
-    protected void CheckTarget(Unit target, Building Btarget)
+    // Check if attackable targets are in attack range
+    // If not, close enough, move towards the target
+    protected virtual void CheckTarget(Unit target, Building Btarget)
     {
         if (m_Target != null)
-        {            
+        {
+            GoTo(target);
             float distance = Vector3.Distance(m_Target.transform.position, transform.position);
-            if (distance < Range)
+            if (distance < 1.2f)  // replace with unit attack range
             {
                 m_Agent.isStopped = true;
                 TargetInRange();
@@ -110,8 +120,9 @@ public abstract class Unit : MonoBehaviour
         }
         else if(m_BTarget!=null)
         {
+            GoTo(Btarget);
             float distance = Vector3.Distance(m_BTarget.transform.position, transform.position);
-            if (distance < Range*2)
+            if (distance < 2.8f) // replace with building attack range
             {
                 m_Agent.isStopped = true;
                 TargetInRange();
@@ -130,10 +141,21 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
+    public virtual void GoTo(Building target)
+    {
+        m_BTarget = target;
+        if (m_BTarget != null)
+        {
+            m_Agent.SetDestination(m_BTarget.transform.position);
+            m_Agent.isStopped = false;
+        }
+    }
+
     // POLYMORPHISM
     public virtual void GoTo(Vector3 position)
     {
         m_Target = null;
+        m_BTarget = null;
         m_Agent.SetDestination(position);
         m_Agent.isStopped = false;
     }
@@ -206,11 +228,7 @@ public abstract class Unit : MonoBehaviour
         AttackSpeed = attackSpeed;
         MaxHitPoints = hitPoints;
 
-        // create the visual HitPoint object for visual feedback
-       /* var hpUi = Instantiate(HitPoint_pf, transform.position, HitPoint_pf.transform.rotation);
-        uiRef = hpUi.GetComponentInChildren<HitPointsSync>();
-        hpUi.transform.GetComponent<HitPointsSync>().SetFollowTarget(gameObject);
-       */
+        // create the visual HitPoint object for visual feedback       
         Util.AddHitPointVisual(HitPoint_pf, transform,ref uiRef);
     }
 

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5390731335267813855}
   - component: {fileID: 5390731335267813840}
   - component: {fileID: 5390731335267813841}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hero
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 3
-  Range: 2
+  SRange: 8
+  AtkRange: 0
   m_Target: {fileID: 0}
   m_BTarget: {fileID: 0}
   HitPoint_pf: {fileID: 1694940469504013105, guid: 26e0ae54724223d4b9b34f6c358e17cd, type: 3}
+  ScanLayer:
+    serializedVersion: 2
+    m_Bits: 128

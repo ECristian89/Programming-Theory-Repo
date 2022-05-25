@@ -13,7 +13,7 @@ public class EnemyBuilding : Building
     void Start()
     {
         base.HandleVisual();
-        InitializeStats(600);
+        InitializeBuildingStats(600);
         TotalUnits = 25;
         StartCoroutine(Spawn());
     }

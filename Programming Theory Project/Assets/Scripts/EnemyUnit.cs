@@ -4,7 +4,7 @@ using UnityEngine;
 
 // INHERITANCE
 public class EnemyUnit : Unit
-{
+{   
     private Transform DefaultDestination;
     private void Start()
     {
@@ -12,7 +12,13 @@ public class EnemyUnit : Unit
         DefaultDestination = GameObject.Find("EnemyDestination").transform;
         GoTo(DefaultDestination.position);
     }
-    
+
+    public override void GoTo(Vector3 position)
+    {
+        base.GoTo(position);
+        m_Target = null;
+        m_BTarget = null;
+    }
     protected override void TargetInRange()
     {
         if (m_Target != null)
@@ -27,10 +33,10 @@ public class EnemyUnit : Unit
                 }
             }
         }
-        else
+        else if(m_BTarget!=null)
         {
             // set the building in range as target
-            if (m_BTarget.GetComponentInParent<Building>())
+            if (m_BTarget.GetComponentInParent<PlayerBuilding>())
             {
                 if (!isAttacking)
                 {
@@ -46,6 +52,6 @@ public class EnemyUnit : Unit
         if (m_Target == null &&m_BTarget ==null)
         {
             GoTo(DefaultDestination.position);
-        }
+        }       
     }   
 }
