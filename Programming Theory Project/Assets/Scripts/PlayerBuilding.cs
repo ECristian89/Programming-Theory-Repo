@@ -16,8 +16,5 @@ public class PlayerBuilding : Building
     {
         
     }
-    private void OnMouseDown()
-    {
-        CreateUnit();
-    }
+    
 }

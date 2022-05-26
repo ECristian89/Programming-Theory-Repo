@@ -24,18 +24,67 @@ public class UserControl : MonoBehaviour
     void HandleSelection()
     {
         var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
+
+        // limit the area where raycasts are cast
+        if (Input.mousePosition.y > Screen.height / 5)
+        {
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
-        {
-            // collider could be children of the unit, so we make sure to check in the parent
+        {           
+            // collider could be children of the unit, so we make sure to check in the parent            
+            var unitHit= hit.collider.GetComponentInParent<Unit>();
+
+            // check if the collider parent has any information for us to show in the UI
+            var detailsHit = hit.collider.GetComponentInParent<DetailsUI>();   
+                if(detailsHit !=null)
+                {
+                    GameManager.ClearDetails();
+                    GameManager.SendDetails(detailsHit);
+                }
+                else if(detailsHit==null)
+                {
+                    GameManager.ClearDetails();
+                }
+
             var unit = hit.collider.GetComponentInParent<PlayerUnit>();
-            m_Selected = unit;
+                var obj = hit.collider.GetComponentInParent<GroundTile>();
+                if (obj != null)
+                {
+                    obj.OpenActionMenu();
+                }
+                    m_Selected = unit;
+        }
         }
     }
+    // populate the UI with selected object details
+    void HandleUIContent()
+    {
 
-    void HandleAction()
+    }
+    // highlight the buildable area
+    void HandleBuildArea()
     {
         var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
+
+        // limit the area where raycasts are cast
+        if (Input.mousePosition.y > Screen.height / 5)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                var obj = hit.collider.GetComponentInParent<GroundTile>();
+                if (obj != null)
+                {
+                    obj.Highlight();
+                }
+            }
+        }
+    }
+    void HandleAction()
+    {
+
+        var ray = GameCamera.ScreenPointToRay(Input.mousePosition);               
+        
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -53,9 +102,12 @@ public class UserControl : MonoBehaviour
     }
    
     void Update()
-    {
+    {        
+        // move camera horizontally from keyboard
         float move = Input.GetAxis("Horizontal");
         GameCamera.transform.position += new Vector3(0, 0, move) * PanSpeed * Time.deltaTime;
+
+            HandleBuildArea();
 
         if (Input.GetMouseButtonDown(0))
         {

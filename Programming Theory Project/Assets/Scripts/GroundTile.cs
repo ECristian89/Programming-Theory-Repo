@@ -18,32 +18,7 @@ public class GroundTile : MonoBehaviour
     {
         rend = GetComponent<Renderer>();
         m_color = rend.material.color;
-    }    
-
-    private void OnMouseDown()
-    {
-        if(canBuild)
-        {
-            Menu.SetActive(true);
-        }
-        else
-        {
-            if(buttonIndex!=0)
-            {
-                Instantiate(BuildingPf, transform.position+offset, BuildingPf.transform.rotation);
-                buttonIndex = 0;
-            }
-                Menu.SetActive(false);
-        }
-    }
-
-    private void OnMouseEnter()
-    {
-        if (canBuild)
-            rend.material.color = new Color32(50, 200, 172, 255);
-        else
-            rend.material.color = new Color32(150, 50, 172, 255);
-    }
+    }       
 
     private void OnMouseExit()
     {
@@ -59,8 +34,28 @@ public class GroundTile : MonoBehaviour
 
     }
 
-    private void OpenActionMenu()
+    public void Highlight()
     {
+        if (canBuild)
+            rend.material.color = new Color32(50, 200, 172, 255);
+        else
+            rend.material.color = new Color32(150, 50, 172, 255);
+    }
 
+    public void OpenActionMenu()
+    {
+        if (canBuild)
+        {
+            Menu.SetActive(true);
+        }
+        else
+        {
+            if (buttonIndex != 0)
+            {
+                Instantiate(BuildingPf, transform.position + offset, BuildingPf.transform.rotation);
+                buttonIndex = 0;
+            }
+            Menu.SetActive(false);
+        }
     }
 }

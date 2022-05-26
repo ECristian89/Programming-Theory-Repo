@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public abstract class Unit : MonoBehaviour
+public abstract class Unit : MonoBehaviour, Util.UIInfoContent
 {
     // ENCAPSULATION
     private int m_MaxHitPoints;
@@ -221,15 +221,60 @@ public abstract class Unit : MonoBehaviour
     }
 
     // use this in child objects to initialize
-    protected void InitializeUnitStats(int hitPoints, int attackPower, float attackSpeed)
+    protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,int productionCost,int upgradeCost)
     {
         HitPoints = hitPoints;
+        Speed = speed;
+        AtkRange = attackRange;
         AttackPower = attackPower;
         AttackSpeed = attackSpeed;
         MaxHitPoints = hitPoints;
 
+        // envelop stats in a readonly structure and send it to the details script attached to this gameObject
+        if(gameObject.GetComponent<DetailsUI>()!=null)
+        {
+        var stats = new Stats(unitName, hitPoints,speed, attackPower, attackSpeed,attackRange,productionCost,upgradeCost);
+        SendStats(stats);
+        }
         // create the visual HitPoint object for visual feedback       
         Util.AddHitPointVisual(HitPoint_pf, transform,ref uiRef);
+
+
     }
 
+    void SendStats(Stats stats)
+    {
+        var _detail=gameObject.GetComponent<DetailsUI>();
+        _detail.EntityName = stats.FullName;
+        _detail.ProductionCost = stats.ProductionCost;
+        _detail.UpgradeCost = stats.UpgradeCost;
+        _detail.Properties = $"HP:{stats.HP} Attack:{stats.AttackPower} Speed:{stats.Speed} Attack speed:{stats.AttackSpeed} Range:{stats.Range}";
+        _detail.Description = $"{stats.FullName}";
+        
+
+    }
+    public virtual string GetName()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public string GetDescription()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public string GetProperties()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public int GetProductionCost()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public int GetUpgradeCost()
+    {
+        throw new System.NotImplementedException();
+    }
 }

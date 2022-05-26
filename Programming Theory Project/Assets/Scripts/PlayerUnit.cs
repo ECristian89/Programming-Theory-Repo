@@ -10,7 +10,7 @@ public class PlayerUnit : Unit
 
     private void Start()
     {
-        InitializeUnitStats(200, 10, 1);
+        InitializeUnitStats("Warrior",200,3,10,1,2,42,600);
     }
     public override void GoTo(Vector3 position)
     {
@@ -46,6 +46,10 @@ public class PlayerUnit : Unit
             }
                
         
-    }    
-    
+    }
+    public override string GetName()
+    {
+        return "Warrior";
+    }
+
 }
