@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// This script handles part of the control code, so detecting when the user clicks on a unit or building and selecting them
@@ -39,22 +40,42 @@ public class UserControl : MonoBehaviour
                 if(detailsHit !=null)
                 {
                     GameManager.ClearDetails();
-                    GameManager.SendDetails(detailsHit);
+                    GameManager.SendDetails(detailsHit);    
+                    
+                    if(detailsHit.transform.GetComponentInParent<PlayerBuilding>())
+                    {
+                        GameManager.Instance.SelectionInteractable.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(
+                        detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit); 
+                    }
                 }
                 else if(detailsHit==null)
                 {
                     GameManager.ClearDetails();
                 }
-
+                // if the clicked object is player unit keep track of it in Game Manager
             var unit = hit.collider.GetComponentInParent<PlayerUnit>();
+                if(unit != null)
+                {
+                    GameManager.isCurrentPlayer = true;
+                }
+                else
+                {
+                    GameManager.isCurrentPlayer = false;
+                }
+
                 var obj = hit.collider.GetComponentInParent<GroundTile>();
                 if (obj != null)
                 {
                     obj.OpenActionMenu();
                 }
-                    m_Selected = unit;
+                    m_Selected = unit;              
         }
         }
+    }
+
+    public void Something()
+    {
+        Debug.Log("Called the onClick");
     }
     // populate the UI with selected object details
     void HandleUIContent()
@@ -128,12 +149,17 @@ public class UserControl : MonoBehaviour
         {
             Marker.SetActive(false);
             Marker.transform.SetParent(null);
+            // Clear UI only if the player unit is flagged
+            if(GameManager.isCurrentPlayer)
+            {
+                GameManager.ClearDetails();
+            }
         }
         else if (m_Selected != null && Marker.transform.parent != m_Selected.transform)
         {
             Marker.SetActive(true);
             Marker.transform.SetParent(m_Selected.transform, false);
-            Marker.transform.localPosition = Vector3.zero;
+            Marker.transform.localPosition = Vector3.zero;            
         }
     }
 }

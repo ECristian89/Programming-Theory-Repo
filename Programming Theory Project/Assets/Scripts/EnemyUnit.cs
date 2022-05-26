@@ -4,12 +4,14 @@ using UnityEngine;
 
 // INHERITANCE
 public class EnemyUnit : Unit
-{   
+{
+    protected int goldValue;
     private Transform DefaultDestination;
     private void Start()
     {
         InitializeUnitStats("Daemon samurai", 100, 2.8f, 45, 2f, 2f, 50, 800);
         DefaultDestination = GameObject.Find("EnemyDestination").transform;
+        goldValue = 84;
         GoTo(DefaultDestination.position);
     }
 
@@ -54,8 +56,9 @@ public class EnemyUnit : Unit
             GoTo(DefaultDestination.position);
         }       
     }
-    public override string GetName()
+    public override void Die()
     {
-        return "Orc swordsman";
+        base.Die();
+        GameManager.Instance.AddGold(goldValue);
     }
 }

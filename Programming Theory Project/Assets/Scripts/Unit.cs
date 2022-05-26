@@ -190,7 +190,7 @@ public abstract class Unit : MonoBehaviour, Util.UIInfoContent
         uiRef.UpdateValue(MaxHitPoints, HitPoints);
         if(m_HitPoints<=0)
         { 
-            Die();
+            Die();            
         }
     }
 

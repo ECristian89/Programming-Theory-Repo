@@ -11,10 +11,14 @@ public class PlayerBuilding : Building
         InitializeBuildingStats(600);
     }
 
-    // Update is called once per frame
-    void Update()
+    public override string GetName()
     {
-        
+        return "Tent";
     }
-    
+
+    public override void CreateUnit()
+    {
+        base.CreateUnit();
+        GameManager.Instance.SubtractGold(10);
+    }
 }

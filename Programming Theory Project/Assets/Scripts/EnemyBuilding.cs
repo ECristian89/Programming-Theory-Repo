@@ -33,4 +33,9 @@ public class EnemyBuilding : Building
         }
     }
 
+    public override string GetName()
+    {
+        return "Cave";
+    }
+
 }

@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 1680286422453167183}
   - component: {fileID: 2639138242258918972}
   - component: {fileID: 6882883341183321084}
+  - component: {fileID: 2696919489983230720}
   m_Layer: 7
   m_Name: Building_Enemy
   m_TagString: Untagged
@@ -144,3 +145,22 @@ MonoBehaviour:
   HitPoint_pf: {fileID: 1694940469504013105, guid: 26e0ae54724223d4b9b34f6c358e17cd, type: 3}
   SpawnRate: 0
   TotalUnits: 0
+--- !u!114 &2696919489983230720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9215647146792850705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ea726c8bf876d84eba3f78e9f509aaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EntityName: Cave
+  ProductionCost: 0
+  UpgradeCost: 0
+  Properties: HP:600 Atk:0 Range:0
+  Description: Bandits and thieves call this their home
+  Thumbnail: {fileID: 21300000, guid: 8551fc98fad43254292257600d9fefc8, type: 3}
+  Interactable: {fileID: 0}

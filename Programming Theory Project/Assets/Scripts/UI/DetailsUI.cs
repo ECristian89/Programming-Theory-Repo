@@ -12,16 +12,5 @@ public class DetailsUI : MonoBehaviour
     public string Description;
     public Sprite Thumbnail;
     public GameObject Interactable;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 }

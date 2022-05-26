@@ -26,13 +26,17 @@ public class Building : MonoBehaviour
 
     }
 
+    public virtual string GetName()
+    {
+        return "Building";
+    }
     private void AutoAttack()
     {
 
     }    
     public virtual void CreateUnit()
     {
-        Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);
+        Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);        
     }
     private void GetDestroyed()
     {
