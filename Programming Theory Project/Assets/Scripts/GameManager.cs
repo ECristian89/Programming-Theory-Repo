@@ -1,30 +1,93 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {    
-    public static GameManager Instance;
     public GameObject UIMenu;
-    public static GameObject Menu;
 
+    public static GameManager Instance;    // singleton
+    public static GameObject Menu;
     public static TextMeshProUGUI SelectionName;
     public static TextMeshProUGUI SelectionDescription;
     public static TextMeshProUGUI SelectionProperties;
     public static GameObject SelectionInteractable;
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
+    public static bool isGameStarted = false;
 
     private static DetailsUI m_CurrentDetails;
-
-
-    public static TextMeshProUGUI GoldText;
-    private static int m_currentGold=0;
-    private static int m_targetGold;   
-   
+    private static TextMeshProUGUI GoldText;
+    private static int m_currentGold=0;   
     
+   
+    // make this class a singleton and allow scene persistance
+    private void Awake()
+    {
+        if(GameManager.Instance!=null)
+        {
+            Destroy(this);
+        }
+        else
+        {
+        Instance = this;
+        }
+        DontDestroyOnLoad(this);
+    }
+
+    void Start()
+    {
+
+    }
+    // SCENE MANAGEMENT
+    public void StartGame()  // load first scene/level
+    {
+        SceneManager.LoadScene(1);
+        SceneManager.sceneLoaded += OnSceneLoaded;   // use this to know when the scene has fully loaded by passing the delegate
+    }
+
+    // do the initial stuff in this method since we use it right after the scene has loaded    
+    // we can do checks here to see which scene is loaded and customize behaviour
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)  
+    {
+        isGameStarted = true;                 // a flag to check when game is started        
+        Initializelevel();       
+    }
+    private void Initializelevel()
+    {        
+
+        if (isGameStarted)
+        {
+            Menu = Instantiate(UIMenu, Vector3.zero, UIMenu.transform.rotation);
+            SelectionName = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+            SelectionDescription = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
+            SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
+            GoldText = Menu.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+
+            GoldText.text = m_currentGold.ToString("N0");
+            ClearDetails();    // clear the UI first
+            AddGold(100);      // if we need to set an initial gold amount
+        }
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;   // remove the event
+    }
+    public void QuitGame()  // exit the application
+    {
+        // should implement the save system here if you need that
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
+    }
+
     // Use this to send the gathered details to the UI
     public static void SendDetails(DetailsUI details)
     {
@@ -40,6 +103,7 @@ public class GameManager : MonoBehaviour
         SelectionDescription.text = m_CurrentDetails.Properties +"\n" +m_CurrentDetails.Description;
     }
 
+    // use this to clear the UI
     public static void ClearDetails()
     {
         if(m_CurrentDetails!=null)
@@ -58,38 +122,14 @@ public class GameManager : MonoBehaviour
             Destroy(child.gameObject);
             }
         }
-
-
-    }
-
-    private void Awake()
-    {
-        if(GameManager.Instance!=null)
-        {
-            Destroy(this);
-        }
-        else
-        {
-        Instance = this;
-        }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        Menu = Instantiate(UIMenu, transform.position, UIMenu.transform.rotation);
-        SelectionName = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-        SelectionDescription = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
-        SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
-        GoldText = Menu.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-
-        GoldText.text =m_currentGold.ToString("N0");
-        ClearDetails();
-        AddGold(100);
-        
     }
 
     
-     public IEnumerator SyncUpValue(int c_val,int amountVal)
+
+// never access this directly 
+// use AddGold or SubtractGold methods instead
+#region Sync Value Algorithm
+    private IEnumerator SyncUpValue(int c_val,int amountVal)  // keep this private
     {
         yield return new WaitForSecondsRealtime(0.02f);
         if(c_val < m_currentGold)
@@ -102,36 +142,39 @@ public class GameManager : MonoBehaviour
             GoldText.text =  c_val.ToString("N0");
             StartCoroutine(SyncUpValue(c_val,amountVal));
         }        
-    }
-  
-    public IEnumerator SyncDownValue(int c_val,int amountVal)  
+    }  
+
+    private IEnumerator SyncDownValue(int c_val,int amountVal)  // keep this private
     {          
         yield return new WaitForSecondsRealtime(0.02f);
-        if (c_val > m_currentGold)
+        if (c_val > m_currentGold)               // compare the current value to the actual gold value
         {
-            c_val -= amountVal/10;            
-            if (m_currentGold > c_val)
+            c_val -= amountVal/10;               // because our amount is of type int we must make sure we never divide to a higher value than amount
+            if (m_currentGold > c_val)           // when the current value exceeeds the actual gold value
             {
-                c_val = m_currentGold;                
+                c_val = m_currentGold;           // we make sure to show the right value on the screen too     
             }
             GoldText.text = c_val.ToString("N0");
-            StartCoroutine(SyncDownValue(c_val,amountVal));
+            StartCoroutine(SyncDownValue(c_val,amountVal));   // repeat until the values are syncronized
         }
     }
+#endregion
 
-    public void AddGold(int amount)
+#region Gold Manipulation Methods
+// use this from any other script that needs to add gold
+    public void AddGold(int amount)  // keep this public
     {
         int currentVal = m_currentGold;
         m_currentGold += amount;
         StartCoroutine(SyncUpValue(currentVal,amount));
     }
    
-   
-    public void SubtractGold(int amount)
+// use this from any other script that needs to subtract gold
+    public void SubtractGold(int amount)  // keep this public 
     {       
-        int currentVal = m_currentGold; // save the initla reference for display
+        int currentVal = m_currentGold; // save the inital reference for display
         m_currentGold -= amount;        // the actual operation  
         StartCoroutine(SyncDownValue(currentVal,amount));        // showing the update
     }
-   
+#endregion
 }
