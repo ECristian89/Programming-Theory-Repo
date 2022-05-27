@@ -10,7 +10,9 @@ using UnityEngine.UI;
 public class UserControl : MonoBehaviour
 {
     public Camera GameCamera;
-    public float PanSpeed = 10.0f;
+    public float PanSpeed = 15.0f;
+    public Transform LeftCameraBound;
+    public Transform RightCameraBound;
     public GameObject Marker;
 
     private Unit m_Selected = null;
@@ -72,11 +74,7 @@ public class UserControl : MonoBehaviour
         }
         }
     }
-
-    public void Something()
-    {
-        Debug.Log("Called the onClick");
-    }
+   
     // populate the UI with selected object details
     void HandleUIContent()
     {
@@ -123,10 +121,22 @@ public class UserControl : MonoBehaviour
     }
    
     void Update()
-    {        
+    {
         // move camera horizontally from keyboard
-        float move = Input.GetAxis("Horizontal");
-        GameCamera.transform.position += new Vector3(0, 0, move) * PanSpeed * Time.deltaTime;
+        // within set limits
+        if (GameCamera.transform.position.z >= LeftCameraBound.position.z && GameCamera.transform.position.z <= RightCameraBound.position.z)
+        {
+            float move = Input.GetAxis("Horizontal");
+            GameCamera.transform.position += new Vector3(0, 0, move) * PanSpeed * Time.deltaTime;
+        }
+        else if( GameCamera.transform.position.z < LeftCameraBound.position.z)
+        {
+            GameCamera.transform.position = LeftCameraBound.position; // must set the bounds objects to same depth distance as Game Camera
+        }
+        else if(GameCamera.transform.position.z > RightCameraBound.position.z)
+        {
+            GameCamera.transform.position = RightCameraBound.position;
+        }
 
             HandleBuildArea();
 

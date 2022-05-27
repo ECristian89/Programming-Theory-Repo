@@ -11,6 +11,7 @@ public class PlayerUnit : Unit
     private void Start()
     {
         InitializeUnitStats("Warrior",200,3,10,1,2,42,600);
+        GoTo(transform.position + new Vector3(0,0,2));
     }
     public override void GoTo(Vector3 position)
     {

@@ -18,8 +18,13 @@ public class PlayerBuilding : Building
 
     public override void CreateUnit()
     {
-        base.CreateUnit();
-        //GameManager.Instance.DirectSubtract(42);
-        GameManager.Instance.SubtractGold(42);
+        // since this requires spending gold, check if we have enough balance
+            GameManager.Instance.SubtractGold(42);
+        if (GameManager.canSpendGold)
+        {
+            base.CreateUnit();
+        }
+        else
+            Debug.Log("Not enough gold!");
     }
 }

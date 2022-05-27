@@ -34,7 +34,7 @@ public class Building : MonoBehaviour
     {
 
     }    
-    public virtual void CreateUnit()
+    public virtual void CreateUnit()  
     {
         Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);        
     }

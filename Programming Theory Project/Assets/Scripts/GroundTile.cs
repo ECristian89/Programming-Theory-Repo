@@ -26,10 +26,15 @@ public class GroundTile : MonoBehaviour
     // issue the build order for this ground tile and flag it
     public void Build()
     {
-        Instantiate(BuildingPf, transform.position+ offset, BuildingPf.transform.rotation);
-        canBuild = false;
-        GameManager.Instance.SubtractGold(150);
-       
+        // since this requires spending gold, check if we have enough balance
+            GameManager.Instance.SubtractGold(150);
+        if (GameManager.canSpendGold)
+        {
+            Instantiate(BuildingPf, transform.position + offset, BuildingPf.transform.rotation);
+            canBuild = false;
+        }
+        else
+            Debug.Log("Not enough gold!");
     }
     private void Demolish()
     {

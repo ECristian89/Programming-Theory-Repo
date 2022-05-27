@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
     public static bool isGameStarted = false;
+    public static bool canSpendGold = false;  // flag to keep gold balance on positive side
 
     private static DetailsUI m_CurrentDetails;
     private static TextMeshProUGUI GoldText;
@@ -41,7 +42,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-
+        isGameStarted = true;  // 
+        Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
     }
     // SCENE MANAGEMENT
     public void StartGame()  // load first scene/level
@@ -163,18 +165,31 @@ public class GameManager : MonoBehaviour
 #region Gold Manipulation Methods
 // use this from any other script that needs to add gold
     public void AddGold(int amount)  // keep this public
-    {
+    {        
         int currentVal = m_currentGold;
         m_currentGold += amount;
         StartCoroutine(SyncUpValue(currentVal,amount));
+        Debug.LogFormat($"Current gold: {m_currentGold}");
     }
-   
-// use this from any other script that needs to subtract gold
+
+    // use this from any other script that needs to subtract gold
     public void SubtractGold(int amount)  // keep this public 
-    {       
-        int currentVal = m_currentGold; // save the inital reference for display
-        m_currentGold -= amount;        // the actual operation  
-        StartCoroutine(SyncDownValue(currentVal,amount));        // showing the update
+    {
+        if (m_currentGold - amount < 0)
+        {
+            canSpendGold = false;
+        }
+        else
+        {
+            canSpendGold = true;
+        }
+
+        if (canSpendGold)
+        {
+            int currentVal = m_currentGold; // save the inital reference for display
+            m_currentGold -= amount;        // the actual operation  
+            StartCoroutine(SyncDownValue(currentVal, amount));        // showing the update
+        }
     }
 #endregion
 }
