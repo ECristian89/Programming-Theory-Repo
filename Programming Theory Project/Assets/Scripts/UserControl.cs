@@ -44,7 +44,7 @@ public class UserControl : MonoBehaviour
                     
                     if(detailsHit.transform.GetComponentInParent<PlayerBuilding>())
                     {
-                        GameManager.Instance.SelectionInteractable.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(
+                        GameManager.SelectionInteractable.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(
                         detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit); 
                     }
                 }

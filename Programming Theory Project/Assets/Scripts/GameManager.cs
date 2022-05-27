@@ -5,9 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
-{
-    public delegate void Link();
-    Link link;
+{    
     public static GameManager Instance;
     public GameObject UIMenu;
     public static GameObject Menu;
@@ -15,7 +13,7 @@ public class GameManager : MonoBehaviour
     public static TextMeshProUGUI SelectionName;
     public static TextMeshProUGUI SelectionDescription;
     public static TextMeshProUGUI SelectionProperties;
-    public GameObject SelectionInteractable;
+    public static GameObject SelectionInteractable;
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
 
@@ -33,7 +31,7 @@ public class GameManager : MonoBehaviour
         m_CurrentDetails = details;        
         
         if(details.Interactable)
-        GameManager.Instance.SelectionInteractable = Instantiate(m_CurrentDetails.Interactable, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).transform, false);
+        SelectionInteractable = Instantiate(m_CurrentDetails.Interactable, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).transform, false);
         
 
         SelectionThumbnail.sprite = m_CurrentDetails.Thumbnail;
@@ -53,9 +51,9 @@ public class GameManager : MonoBehaviour
         }
         
         // delete all child objects of Interactable 
-        if(GameManager.Instance.SelectionInteractable != null)
+        if(SelectionInteractable != null)
         {
-            foreach (Transform child in GameManager.Instance.SelectionInteractable.transform.parent.transform)
+            foreach (Transform child in SelectionInteractable.transform.parent.transform)
             {
             Destroy(child.gameObject);
             }
@@ -84,59 +82,56 @@ public class GameManager : MonoBehaviour
         SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
         GoldText = Menu.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
 
-        GoldText.text = m_currentGold.ToString("N0");
+        GoldText.text =m_currentGold.ToString("N0");
         ClearDetails();
-        m_targetGold = 500;
-        StartCoroutine(SyncUpValue(m_targetGold));
+        AddGold(100);
+        
     }
 
     
-     public IEnumerator SyncUpValue(int val)
+     public IEnumerator SyncUpValue(int c_val,int amountVal)
     {
         yield return new WaitForSecondsRealtime(0.02f);
-        if(val> m_currentGold)
+        if(c_val < m_currentGold)
         {
-            m_currentGold += val / 50;
-            if(m_currentGold>val)
+            c_val += amountVal / 10;
+            if(m_currentGold < c_val)
             {
-                m_currentGold = val;
+                c_val = m_currentGold;
             }
-            GoldText.text = m_currentGold.ToString("N0");
-            StartCoroutine(SyncUpValue(val));
-        }
-
-        
+            GoldText.text =  c_val.ToString("N0");
+            StartCoroutine(SyncUpValue(c_val,amountVal));
+        }        
     }
   
-    public IEnumerator SyncDownValue(int n_val,int amountVal)
-    {           
-        
+    public IEnumerator SyncDownValue(int c_val,int amountVal)  
+    {          
         yield return new WaitForSecondsRealtime(0.02f);
-        if (n_val < m_currentGold)
+        if (c_val > m_currentGold)
         {
-            m_currentGold -= amountVal / 50;            
-            if (m_currentGold < n_val)
+            c_val -= amountVal/10;            
+            if (m_currentGold > c_val)
             {
-                m_currentGold = n_val;
+                c_val = m_currentGold;                
             }
-            GoldText.text = m_currentGold.ToString("N0");
-            StartCoroutine(SyncDownValue(n_val,amountVal));
+            GoldText.text = c_val.ToString("N0");
+            StartCoroutine(SyncDownValue(c_val,amountVal));
         }
-
-
     }
 
     public void AddGold(int amount)
     {
-        m_targetGold = m_currentGold + amount; // same helper to be added as for Subtract
-        StartCoroutine(SyncUpValue(m_targetGold));
+        int currentVal = m_currentGold;
+        m_currentGold += amount;
+        StartCoroutine(SyncUpValue(currentVal,amount));
     }
-
+   
+   
     public void SubtractGold(int amount)
-    {
-        int newVal = m_currentGold - amount; // should add a helper counter here to avoid bad calculation if player is spending gold fast
-        Debug.LogFormat($"new value:{newVal}  ->  currentGold:{m_currentGold} || amount:{amount}");
-        StartCoroutine(SyncDownValue(newVal,amount));        
+    {       
+        int currentVal = m_currentGold; // save the initla reference for display
+        m_currentGold -= amount;        // the actual operation  
+        StartCoroutine(SyncDownValue(currentVal,amount));        // showing the update
     }
-    
+   
 }

@@ -19,6 +19,7 @@ public class PlayerBuilding : Building
     public override void CreateUnit()
     {
         base.CreateUnit();
-        GameManager.Instance.SubtractGold(10);
+        //GameManager.Instance.DirectSubtract(42);
+        GameManager.Instance.SubtractGold(42);
     }
 }
