@@ -9,13 +9,17 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {    
     public GameObject UIMenu;
+    public GameObject EndScreen;
+    public GameObject[] NotificationPf;
+    public GameObject TopNotification;
+    public Sprite NoSelectionThumbnail;
 
     public static GameManager Instance = null; // singleton
     public static GameObject Menu;
     public static TextMeshProUGUI SelectionName;
     public static TextMeshProUGUI SelectionDescription;
     public static TextMeshProUGUI SelectionProperties;
-    public static GameObject SelectionInteractable;
+    public static GameObject SelectionInteractable;    
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
     public static bool isGameStarted = false;
@@ -42,8 +46,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        isGameStarted = true;  // 
-        Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
+       // isGameStarted = true;  // 
+       // Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
     }
     // SCENE MANAGEMENT
     public void StartGame()  // load first scene/level
@@ -73,6 +77,7 @@ public class GameManager : MonoBehaviour
         if (isGameStarted)
         {
             Menu = Instantiate(UIMenu, Vector3.zero, UIMenu.transform.rotation);
+            TopNotification = Menu.transform.GetChild(0).GetChild(2).gameObject;
             SelectionName = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
             SelectionDescription = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
             SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
@@ -105,13 +110,13 @@ public class GameManager : MonoBehaviour
         var unitsCount = GameObject.FindObjectsOfType<EnemyUnit>().Length;
         var buildingsCount = GameObject.FindObjectsOfType<EnemyBuilding>().Length;
 
-        Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
-        Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
+        //Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
+        //Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
 
         if (unitsCount == 0 && buildingsCount == 0)
         {
-            Debug.Log("VICTORIOUS!");  // replace with an actual GAME OVER notification and options
-            BackToMain();
+            ShowNotification(NotificationPf[0], "You are VICTORIOUS!");  // replace with an actual GAME OVER notification and options
+            Instantiate(EndScreen);
         }
     }
 
@@ -121,12 +126,15 @@ public class GameManager : MonoBehaviour
         var unitsCount=GameObject.FindObjectsOfType<PlayerUnit>().Length;
         var buildingsCount = GameObject.FindObjectsOfType<PlayerBuilding>().Length;
 
-        Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
-        Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
+        //Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
+       // Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
 
         if(unitsCount==0 && buildingsCount==0)
         {
             Debug.Log("GAME OVER!");  // replace with an actual GAME OVER notification and options
+            var End = Instantiate(EndScreen);
+            End.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "DEFEAT!";
+            yield return new WaitForSecondsRealtime(5);
             BackToMain();
         }
     }
@@ -140,7 +148,35 @@ public class GameManager : MonoBehaviour
         StartCoroutine(CountEnemyUnits());
     }
 
+
+    public static int GetCurrentGold()
+    {
+        return m_currentGold;
+    }
     // UI CONTENT UPDATE
+
+    public void ShowNotification(GameObject notificationPf)
+    {
+        Instantiate(notificationPf, TopNotification.transform);        
+    }
+
+    /// <summary>
+    /// limit the message to 20 chararcters(space included)
+    /// </summary>
+    /// <param name="notificationPf">notification template</param>
+    /// <param name="message">text to be shown</param>
+    public void ShowNotification(GameObject notificationPf,string message)
+    {
+        var notify =Instantiate(notificationPf, TopNotification.transform);
+        notify.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = message;
+    }
+
+    public void ShowNotification(GameObject notificationPf, string message,Sprite thumbnail)
+    {
+        var notify = Instantiate(notificationPf, TopNotification.transform);
+        notify.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = message;
+        notify.transform.GetChild(1).GetComponent<Image>().sprite = thumbnail;
+    }
 
     // Use this to send the gathered details to the UI
     public static void SendDetails(DetailsUI details)
@@ -162,10 +198,10 @@ public class GameManager : MonoBehaviour
     {
         if(m_CurrentDetails!=null)
         {           
-                SelectionName.text = "No selection";            
+                SelectionName.text = "";            
                 SelectionDescription.text = "";          
                 //SelectionProperties.text = "";         
-                SelectionThumbnail.sprite = null;
+                SelectionThumbnail.sprite = GameManager.Instance.NoSelectionThumbnail;  // default black sprite for no selection
         }
         
         // delete all child objects of Interactable 

@@ -14,6 +14,7 @@ public class UserControl : MonoBehaviour
     public Transform LeftCameraBound;
     public Transform RightCameraBound;
     public GameObject Marker;
+    public GameObject DestinationMarker;
 
     private Unit m_Selected = null;
 
@@ -21,7 +22,7 @@ public class UserControl : MonoBehaviour
     void Start()
     {
         GameCamera = Camera.main;
-        Marker.SetActive(false);
+        Marker.SetActive(false);        
     }
 
     void HandleSelection()
@@ -116,6 +117,10 @@ public class UserControl : MonoBehaviour
             else
             {
                 m_Selected.GoTo(hit.point);
+                // show click feedback for the user
+                DestinationMarker.transform.position = hit.point + new Vector3(0,0.67f,0);
+                DestinationMarker.SetActive(true);
+                DestinationMarker.transform.GetComponent<DisableTimer>().RefreshCounter();   // reset the timer
             }            
         }
     }

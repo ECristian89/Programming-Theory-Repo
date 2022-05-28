@@ -47,10 +47,6 @@ public class PlayerUnit : Unit
             }
                
         
-    }
-    public override string GetName()
-    {
-        return "Warrior";
-    }
+    }   
 
 }

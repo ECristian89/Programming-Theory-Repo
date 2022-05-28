@@ -25,13 +25,5 @@ public class Util : MonoBehaviour
         UiRef.SetHeight(height);
         hpUi.transform.GetComponent<HitPointsSync>().SetFollowTarget(Pos.gameObject);
     }
-
-    public interface UIInfoContent
-    {
-        string GetName();
-        string GetDescription();
-        string GetProperties();
-        int GetProductionCost();
-        int GetUpgradeCost();
-    }
+   
 }

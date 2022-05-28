@@ -11,7 +11,7 @@ public class EnemyUnit : Unit
     {
         InitializeUnitStats("Daemon samurai", 100, 2.8f, 45, 2f, 2f, 50, 800);
         DefaultDestination = GameObject.Find("EnemyDestination").transform;
-        goldValue = 84;
+        goldValue = 62;
         GoTo(DefaultDestination.position);
     }
 

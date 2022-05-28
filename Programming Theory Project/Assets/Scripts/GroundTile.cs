@@ -30,11 +30,12 @@ public class GroundTile : MonoBehaviour
             GameManager.Instance.SubtractGold(150);
         if (GameManager.canSpendGold)
         {
-            Instantiate(BuildingPf, transform.position + offset, BuildingPf.transform.rotation);
+            var building=Instantiate(BuildingPf, transform.position + offset, BuildingPf.transform.rotation);
             canBuild = false;
+            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[1],"built",building.GetComponent<DetailsUI>().Thumbnail);
         }
         else
-            Debug.Log("Not enough gold!");
+            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[0],$"You need {150-GameManager.GetCurrentGold()} more gold");
     }
     private void Demolish()
     {

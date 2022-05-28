@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public abstract class Unit : MonoBehaviour, Util.UIInfoContent
+public abstract class Unit : MonoBehaviour
 {
     // ENCAPSULATION
     private int m_MaxHitPoints;
@@ -168,8 +168,8 @@ public abstract class Unit : MonoBehaviour, Util.UIInfoContent
         if(target!=null)
         {
         target.TakeDamage(AttackPower);
-        Debug.Log($"{target} was attacked with {AttackPower} attack power.");
-        Debug.Log($"{target} HP is: {target.HitPoints}");
+       // Debug.Log($"{target} was attacked with {AttackPower} attack power.");
+       // Debug.Log($"{target} HP is: {target.HitPoints}");
         }
     }
     
@@ -180,7 +180,7 @@ public abstract class Unit : MonoBehaviour, Util.UIInfoContent
         if (target != null)
         {
             target.TakeDamage(AttackPower);
-            Debug.Log($"{target} was attacked with {AttackPower} attack power.");            
+          //  Debug.Log($"{target} was attacked with {AttackPower} attack power.");            
         }
     }
 
@@ -251,33 +251,9 @@ public abstract class Unit : MonoBehaviour, Util.UIInfoContent
         _detail.EntityName = stats.FullName;
         _detail.ProductionCost = stats.ProductionCost;
         _detail.UpgradeCost = stats.UpgradeCost;
-        _detail.Properties = $"HP:{stats.HP} Attack:{stats.AttackPower} Speed:{stats.Speed} Attack speed:{stats.AttackSpeed} Range:{stats.Range}";
+        _detail.Properties = $"HP:{stats.HP}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{2/stats.AttackSpeed}\nRange:{stats.Range} ";
         _detail.Description = $"{stats.FullName}";
         
 
-    }
-    public virtual string GetName()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public string GetDescription()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public string GetProperties()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public int GetProductionCost()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public int GetUpgradeCost()
-    {
-        throw new System.NotImplementedException();
-    }
+    }  
 }

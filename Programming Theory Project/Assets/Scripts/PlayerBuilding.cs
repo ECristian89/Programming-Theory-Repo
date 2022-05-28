@@ -21,10 +21,11 @@ public class PlayerBuilding : Building
         // since this requires spending gold, check if we have enough balance
             GameManager.Instance.SubtractGold(42);
         if (GameManager.canSpendGold)
-        {
-            base.CreateUnit();
+        {           
+            var unit = Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);   // we need to override the base call to reference the thumbnail for notification
+            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[1], "created", unit.GetComponent<DetailsUI>().Thumbnail);
         }
         else
-            Debug.Log("Not enough gold!");
+            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[0]);
     }
 }

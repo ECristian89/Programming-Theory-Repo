@@ -36,7 +36,7 @@ public class Building : MonoBehaviour
     }    
     public virtual void CreateUnit()  
     {
-        Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);        
+        var unit=Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);        
     }
     private void GetDestroyed()
     {
@@ -51,8 +51,7 @@ public class Building : MonoBehaviour
         m_HitPoints -= damage;
         uiRef.UpdateValue(MaxHitPoints, HitPoints);            
         if (m_HitPoints <=0)
-        {
-            Debug.Log("Building is destroyed");
+        {            
             GetDestroyed();
         }
     }
