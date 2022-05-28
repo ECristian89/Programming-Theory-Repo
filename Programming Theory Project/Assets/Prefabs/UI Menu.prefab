@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 9086730979883145686}
   - component: {fileID: 1221866588824424793}
   - component: {fileID: 8757408930378155087}
+  - component: {fileID: 1407844368225151448}
   m_Layer: 5
   m_Name: Menu Button
   m_TagString: Untagged
@@ -286,7 +287,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1221866588824424793}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1407844368225151448}
+        m_TargetAssemblyTypeName: SceneMenu, Assembly-CSharp
+        m_MethodName: LinkBackButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1407844368225151448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5167631539903361790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0987b6a1da12db40af04e5ea4ce087d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5172939293006420070
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,6 +1218,7 @@ GameObject:
   - component: {fileID: 5508597868631704277}
   - component: {fileID: 5508597868631704232}
   - component: {fileID: 5508597868631704235}
+  - component: {fileID: 2257417841070997216}
   m_Layer: 5
   m_Name: Top Menu
   m_TagString: Untagged
@@ -1265,6 +1291,23 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &2257417841070997216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5508597868631704276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &5508597868639591095
 GameObject:
   m_ObjectHideFlags: 0

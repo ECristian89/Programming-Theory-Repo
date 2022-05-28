@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {    
     public GameObject UIMenu;
 
-    public static GameManager Instance;    // singleton
+    public static GameManager Instance = null; // singleton
     public static GameObject Menu;
     public static TextMeshProUGUI SelectionName;
     public static TextMeshProUGUI SelectionDescription;
@@ -29,35 +29,43 @@ public class GameManager : MonoBehaviour
     // make this class a singleton and allow scene persistance
     private void Awake()
     {
-        if(GameManager.Instance!=null)
+        if(Instance!=null)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
         else
         {
         Instance = this;
         }
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(this.gameObject);
     }
 
     void Start()
     {
-        isGameStarted = true;  // 
-        Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
+        //isGameStarted = true;  // 
+        //Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
     }
     // SCENE MANAGEMENT
     public void StartGame()  // load first scene/level
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(1);        
         SceneManager.sceneLoaded += OnSceneLoaded;   // use this to know when the scene has fully loaded by passing the delegate
     }
 
-    // do the initial stuff in this method since we use it right after the scene has loaded    
-    // we can do checks here to see which scene is loaded and customize behaviour
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)  
+    static public void BackToMain()
     {
-        isGameStarted = true;                 // a flag to check when game is started        
-        Initializelevel();       
+        isGameStarted = false;
+        SceneManager.LoadScene(0);
+    }
+
+    // do the initial stuff in this method since we use it right after the scene has loaded      
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex != 0)      // we can do checks here to see which scene is loaded and customize behaviour
+        {
+            isGameStarted = true;                 // a flag to check when game is started   
+            Initializelevel();
+        }
     }
     private void Initializelevel()
     {        
@@ -72,6 +80,7 @@ public class GameManager : MonoBehaviour
 
             GoldText.text = m_currentGold.ToString("N0");
             ClearDetails();    // clear the UI first
+            if(m_currentGold<100)  // to avoid getting multiple calls on add gold initializer
             AddGold(100);      // if we need to set an initial gold amount
         }
     }
