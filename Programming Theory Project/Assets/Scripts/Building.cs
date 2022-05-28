@@ -42,6 +42,9 @@ public class Building : MonoBehaviour
     {
         Destroy(uiRef.gameObject);
         Destroy(gameObject);
+
+        GameManager.Instance.IsGameOver();
+        GameManager.Instance.IsVictorious();
     }
     public virtual void TakeDamage(int damage)
     {

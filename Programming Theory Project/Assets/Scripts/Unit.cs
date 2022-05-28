@@ -203,6 +203,9 @@ public abstract class Unit : MonoBehaviour, Util.UIInfoContent
         }
         Destroy(uiRef.gameObject);
             Destroy(gameObject);
+
+        GameManager.Instance.IsGameOver();
+        GameManager.Instance.IsVictorious();
     }    
 
     protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Unit target)

@@ -42,8 +42,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //isGameStarted = true;  // 
-        //Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
+        isGameStarted = true;  // 
+        Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
     }
     // SCENE MANAGEMENT
     public void StartGame()  // load first scene/level
@@ -98,6 +98,49 @@ public class GameManager : MonoBehaviour
         Application.Quit();
 #endif
     }
+
+    private IEnumerator CountEnemyUnits() //count enemy's units and buildings
+    {
+        yield return new WaitForEndOfFrame();
+        var unitsCount = GameObject.FindObjectsOfType<EnemyUnit>().Length;
+        var buildingsCount = GameObject.FindObjectsOfType<EnemyBuilding>().Length;
+
+        Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
+        Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
+
+        if (unitsCount == 0 && buildingsCount == 0)
+        {
+            Debug.Log("VICTORIOUS!");  // replace with an actual GAME OVER notification and options
+            BackToMain();
+        }
+    }
+
+    private IEnumerator CountPlayerUnits() // count player's units and buildings
+    {
+        yield return new WaitForEndOfFrame();
+        var unitsCount=GameObject.FindObjectsOfType<PlayerUnit>().Length;
+        var buildingsCount = GameObject.FindObjectsOfType<PlayerBuilding>().Length;
+
+        Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
+        Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
+
+        if(unitsCount==0 && buildingsCount==0)
+        {
+            Debug.Log("GAME OVER!");  // replace with an actual GAME OVER notification and options
+            BackToMain();
+        }
+    }
+    public void IsGameOver()  // check if the Game Over conditions are met
+    {
+        StartCoroutine(CountPlayerUnits());
+    }
+
+    public void IsVictorious()  // check if the Game Over conditions are met
+    {
+        StartCoroutine(CountEnemyUnits());
+    }
+
+    // UI CONTENT UPDATE
 
     // Use this to send the gathered details to the UI
     public static void SendDetails(DetailsUI details)
@@ -177,8 +220,7 @@ public class GameManager : MonoBehaviour
     {        
         int currentVal = m_currentGold;
         m_currentGold += amount;
-        StartCoroutine(SyncUpValue(currentVal,amount));
-        Debug.LogFormat($"Current gold: {m_currentGold}");
+        StartCoroutine(SyncUpValue(currentVal,amount));        
     }
 
     // use this from any other script that needs to subtract gold
