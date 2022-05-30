@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class DetailsUI : MonoBehaviour
-{
+{   
     public string EntityName;
     public string Description;
 
@@ -15,6 +15,7 @@ public class DetailsUI : MonoBehaviour
     public int MaxHitPoints;
     public int AttackPower;
     public float AttackSpeed;
+    public float Speed;
     public float Range;
 
     public string Properties;

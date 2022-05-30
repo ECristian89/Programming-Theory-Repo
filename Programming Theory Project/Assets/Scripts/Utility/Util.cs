@@ -39,9 +39,20 @@ public class Util : MonoBehaviour
         _detail.MaxHitPoints = stats.HP;
         _detail.CurrentHitPoints = stats.HP;
 
-        var atkspd = (1 / stats.AttackSpeed).ToString("N1");
-        _detail.Properties = $"HP:{stats.HP}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{atkspd}\nRange:{stats.Range} ";
+        _detail.Speed = stats.Speed;
+        _detail.AttackPower = stats.AttackPower;
+        _detail.AttackSpeed = 1 / stats.AttackSpeed;
         _detail.Thumbnail = stats.Thumbnail;
+    }
+
+    public static void ShowGraphicNotification(string message,DetailsUI icon)
+    {
+        GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[1], message, icon.Thumbnail);
+    }
+
+    public static void ShowTextNotification()  // can be extended for custom text message max:25 chars
+    {
+        GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[0]);
     }
    
 }

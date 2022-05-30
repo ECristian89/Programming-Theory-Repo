@@ -42,7 +42,7 @@ public class UserControl : MonoBehaviour
             // check if the collider parent has any information for us to show in the UI
              detailsHit = hit.collider.GetComponentInParent<DetailsUI>();   
                 if(detailsHit !=null)
-                {
+                {                   
                     GameManager.Instance.SetUI(ref detailsHit);
                     GameManager.ClearDetails();
                     GameManager.SendDetails(detailsHit);    
@@ -78,7 +78,7 @@ public class UserControl : MonoBehaviour
                     }
                 }
                 else if(detailsHit==null)
-                {
+                {                    
                     GameManager.ClearDetails();
                 }
                 // if the clicked object is player unit keep track of it in Game Manager

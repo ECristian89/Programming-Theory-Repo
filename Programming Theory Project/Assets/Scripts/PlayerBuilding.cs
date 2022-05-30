@@ -26,12 +26,12 @@ public class PlayerBuilding : Building
         // since this requires spending gold, check if we have enough balance
             GameManager.Instance.SubtractGold(UnitCost[unitIndex]);
         if (GameManager.canSpendGold)
-        {           
+        {
             var unit = Instantiate(UnitPf[unitIndex], SpawnPoint.position, UnitPf[unitIndex].transform.rotation);   // we need to override the base call to reference the thumbnail for notification
-            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[1], "created", unit.GetComponent<DetailsUI>().Thumbnail);
+            Util.ShowGraphicNotification("created", unit.GetComponent<DetailsUI>());
         }
         else
-            GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[0]);
+            Util.ShowTextNotification();
     }
     
 }

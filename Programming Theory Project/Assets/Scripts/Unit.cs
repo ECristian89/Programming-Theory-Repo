@@ -65,7 +65,7 @@ public abstract class Unit : MonoBehaviour
     public float Speed = 3f;    // Movement speed
     public float SRange = 8.0f; // Scan range
     public float AtkRange;  // Attacking Range
-    protected bool isAttacking;    
+    protected bool isAttacking;   
     protected NavMeshAgent m_Agent;  
     protected Unit m_Target;    
     protected Building m_BTarget;    
@@ -192,8 +192,12 @@ public abstract class Unit : MonoBehaviour
         m_HitPoints -= damage;
         uiRef.UpdateValue(MaxHitPoints, HitPoints);
         gameObject.GetComponent<DetailsUI>().CurrentHitPoints = HitPoints;
-        GameManager.UpdateUIHp();
-        
+        if (GetComponent<DetailsUI>().Equals(GameManager.Instance.GetCurrentUI()))
+        {           
+            if(GameManager.SelectionName.text!="")
+            GameManager.UpdateUIHp();
+        }
+
         if(m_HitPoints<=0)
         { 
             Die();            
@@ -209,6 +213,7 @@ public abstract class Unit : MonoBehaviour
         }
         Destroy(uiRef.gameObject);
             Destroy(gameObject);
+        GameManager.ClearDetails();
 
         GameManager.Instance.IsGameOver();
         GameManager.Instance.IsVictorious();
@@ -275,23 +280,5 @@ public abstract class Unit : MonoBehaviour
                 }
         }
     }
-
-    void SendStats(Stats stats)
-    {
-        var _detail=gameObject.GetComponent<DetailsUI>();
-
-        _detail.EntityName = stats.FullName;
-        _detail.Description = $"{stats.FullName}";
-
-        _detail.ProductionCost = stats.ProductionCost;
-        _detail.UpgradeCost = stats.UpgradeCost;
-
-        _detail.MaxHitPoints = MaxHitPoints;
-        _detail.CurrentHitPoints = HitPoints;
-
-        var atkspd = (1 / stats.AttackSpeed).ToString("N1");
-        _detail.Properties = $"HP:{HitPoints}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{atkspd}\nRange:{stats.Range} ";
-        _detail.Thumbnail = stats.Thumbnail;
-
-    }  
+    
 }

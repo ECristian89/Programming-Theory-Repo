@@ -17,11 +17,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance = null; // singleton
     public static GameObject Menu;
     public static TextMeshProUGUI SelectionName;
-    public static TextMeshProUGUI SelectionDescription;
+    public static TextMeshProUGUI[] SelectionProperty=new TextMeshProUGUI[4];
     public static TextMeshProUGUI SelectionProduction;
     public static GameObject[] SelectionInteractable= new GameObject[6];    // clickable button/s that creat units
     public static GameObject UpgradeButton;                                 // clickable button that upgrades
-    public static GameObject HpBar;
+    public static GameObject HpBar,NameBg,DetailBg;
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
     public static bool isGameStarted = false;
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
     {
         if (scene.buildIndex != 0)      // we can do checks here to see which scene is loaded and customize behaviour
         {
-            isGameStarted = true;                 // a flag to check when game is started   
+            isGameStarted = true;       // a flag to check when game is started   
             Initializelevel();
         }
     }
@@ -80,8 +80,15 @@ public class GameManager : MonoBehaviour
         {
             Menu = Instantiate(UIMenu, Vector3.zero, UIMenu.transform.rotation);
             TopNotification = Menu.transform.GetChild(0).GetChild(2).gameObject;
-            SelectionName = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-            SelectionDescription = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
+            SelectionName = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
+            NameBg = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).gameObject;
+            DetailBg = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).gameObject;
+            // thse values will change a lot so we better hold a reference
+            SelectionProperty[0] = DetailBg.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();  // HitPoints
+            SelectionProperty[1] = DetailBg.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();  // Speed
+            SelectionProperty[2] = DetailBg.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();  // Attack
+            SelectionProperty[3] = DetailBg.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();  // Attack Speed
+
             SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
             GoldText = Menu.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
             HpBar = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(2).gameObject;
@@ -202,9 +209,11 @@ public class GameManager : MonoBehaviour
 
         SelectionThumbnail.sprite = m_CurrentDetails.Thumbnail;
         SelectionName.text = m_CurrentDetails.EntityName;
-        
 
-        SelectionDescription.text = m_CurrentDetails.Properties +"\n" +m_CurrentDetails.Description;
+        SelectionProperty[0].text = m_CurrentDetails.CurrentHitPoints + "/" + m_CurrentDetails.MaxHitPoints;
+        SelectionProperty[1].text = m_CurrentDetails.Speed.ToString("N1"); 
+        SelectionProperty[2].text = m_CurrentDetails.AttackPower.ToString();
+        SelectionProperty[3].text = m_CurrentDetails.AttackSpeed.ToString("N1");
 
         UpdateUIHp();
     }
@@ -212,24 +221,34 @@ public class GameManager : MonoBehaviour
     public static void UpdateUIHp()   // sync the shown Hitpoints
     {
         HpBar.SetActive(true);
+        NameBg.SetActive(true);
+        DetailBg.SetActive(true);
         float hpVal = (float)m_CurrentDetails.CurrentHitPoints / m_CurrentDetails.MaxHitPoints;         
         HpBar.transform.GetChild(0).transform.GetComponent<Image>().fillAmount = hpVal;
+        SelectionProperty[0].text = m_CurrentDetails.CurrentHitPoints + "/" + m_CurrentDetails.MaxHitPoints;
     }
 
     public void SetUI(ref DetailsUI details)
     {
         m_CurrentDetails = details;
     }
+
+    public DetailsUI GetCurrentUI()
+    {
+        return m_CurrentDetails;
+    }
+    
     // use this to clear the UI
     public static void ClearDetails()
     {
         if(m_CurrentDetails!=null)
         {
-            SelectionName.text = "";
-            SelectionDescription.text = "";
+            SelectionName.text = "";            
             SelectionThumbnail.sprite = GameManager.Instance.NoSelectionThumbnail;  // default black sprite for no selection
-            Destroy(UpgradeButton);
+            Destroy(UpgradeButton);          
             HpBar.SetActive(false);
+            NameBg.SetActive(false);
+            DetailBg.SetActive(false);
         }
 
         

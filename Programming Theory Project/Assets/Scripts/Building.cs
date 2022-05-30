@@ -46,19 +46,60 @@ public class Building : MonoBehaviour
     }
 
     private float Speed = 0;  // no speed for buildings, should remove
+    public float Range;
     public GameObject[] UnitPf = new GameObject[6];
     public Sprite[] Thbnail;
     public GameObject UpgradePf;
     public Transform SpawnPoint;
     private HitPointsSync uiRef;
-    public GameObject HitPoint_pf;      
+    private bool isAttacking;
+    [SerializeField]
+    private Collider[] target;   
+    public GameObject HitPoint_pf;
+    public LayerMask ScanLayer;
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, Range);
+    }
     private void ScanEnemy()
     {
+        target = Physics.OverlapSphere(transform.position, Range, ScanLayer);
+        if (!isAttacking)
+        {
+            StartCoroutine(InitiateAttack());
+        }
+    }
 
-    }   
+    private void Update()
+    {
+        ScanEnemy();
+    }
+
+    protected void ScanTarget()
+    {
+       
+        AutoAttack();
+    }
+
+    IEnumerator InitiateAttack()
+    {
+        isAttacking = true;
+        yield return new WaitForSecondsRealtime(AttackSpeed);
+        AutoAttack();
+        isAttacking = false;
+    }
     private void AutoAttack()
     {
+        if (target.Length != 0)
+        {
+            foreach (var item in target)
+            {
+                item.transform.gameObject.GetComponentInParent<Unit>().TakeDamage(AttackPower);
+            }
+            //target[0].transform.gameObject.GetComponentInParent<Unit>().TakeDamage(AttackPower);
+        }
 
     }    
     public virtual void CreateUnit()  // use this for testing and enemies
@@ -84,7 +125,11 @@ public class Building : MonoBehaviour
         m_HitPoints -= damage;
         uiRef.UpdateValue(MaxHitPoints, HitPoints);
         gameObject.GetComponent<DetailsUI>().CurrentHitPoints = HitPoints;
-        GameManager.UpdateUIHp();
+        if (GetComponent<DetailsUI>().Equals(GameManager.Instance.GetCurrentUI()))  // check only when active selection
+        {
+            if (GameManager.SelectionName.text != "") // double check for edge cases
+                GameManager.UpdateUIHp();
+        }
         if (m_HitPoints <=0)
         {            
             GetDestroyed();
@@ -144,9 +189,18 @@ public class Building : MonoBehaviour
         if (UpgradePf != null)
         {
             GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
-            var building = Instantiate(UpgradePf, transform.position, UpgradePf.transform.rotation);            
-            GameManager.ClearDetails();
-            GetDestroyed();
+            if (GameManager.canSpendGold)
+            {
+                GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
+                var building = Instantiate(UpgradePf, transform.position, UpgradePf.transform.rotation);
+                GameManager.ClearDetails();
+                Util.ShowGraphicNotification("upgraded", transform.GetComponent<DetailsUI>());
+                GetDestroyed();
+            }
+            else
+            {
+                Util.ShowTextNotification();
+            }
         }
-    }
+    }    
 }
