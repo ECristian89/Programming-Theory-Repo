@@ -16,7 +16,8 @@ public class Building : MonoBehaviour
         get {return m_HitPoints; }
         set {m_HitPoints = value; }
     }
-    public GameObject UnitPf;
+    public GameObject[] UnitPf = new GameObject[6];
+    public GameObject UpgradePf;
     public Transform SpawnPoint;
     private HitPointsSync uiRef;
     public GameObject HitPoint_pf;      
@@ -24,20 +25,21 @@ public class Building : MonoBehaviour
     private void ScanEnemy()
     {
 
-    }
-
-    public virtual string GetName()
-    {
-        return "Building";
-    }
+    }   
     private void AutoAttack()
     {
 
     }    
-    public virtual void CreateUnit()  
+    public virtual void CreateUnit()  // use this for testing and enemies
     {
-        var unit=Instantiate(UnitPf, SpawnPoint.position, UnitPf.transform.rotation);        
+        var unit=Instantiate(UnitPf[0], SpawnPoint.position, UnitPf[0].transform.rotation);        
     }
+
+    public virtual void CreateUnit(int index)    // use this for player
+    {
+        var unit = Instantiate(UnitPf[index], SpawnPoint.position, UnitPf[index].transform.rotation);
+    }
+
     private void GetDestroyed()
     {
         Destroy(uiRef.gameObject);
@@ -64,5 +66,18 @@ public class Building : MonoBehaviour
     {
         HitPoints = HP;
         MaxHitPoints = HitPoints;
+    }
+
+    public virtual void UpgradeBuilding()
+    {
+        // check if upgrade is possible maybe
+        if (UpgradePf != null)
+        {
+            GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
+            var building = Instantiate(UpgradePf, transform.position, UpgradePf.transform.rotation);
+            building.transform.GetComponent<Building>().InitializeBuildingStats(850);
+            GetDestroyed();
+            GameManager.ClearDetails();
+        }
     }
 }

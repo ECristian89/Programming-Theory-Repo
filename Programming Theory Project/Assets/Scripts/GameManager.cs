@@ -18,8 +18,9 @@ public class GameManager : MonoBehaviour
     public static GameObject Menu;
     public static TextMeshProUGUI SelectionName;
     public static TextMeshProUGUI SelectionDescription;
-    public static TextMeshProUGUI SelectionProperties;
-    public static GameObject SelectionInteractable;    
+    public static TextMeshProUGUI SelectionProduction;
+    public static GameObject[] SelectionInteractable= new GameObject[6];    // clickable button/s that creat units
+    public static GameObject UpgradeButton;                                 // clickable button that upgrades
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
     public static bool isGameStarted = false;
@@ -46,8 +47,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-       // isGameStarted = true;  // 
-       // Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
+        isGameStarted = true;  // 
+        Initializelevel();     // FOR FAST TESTING ONLY, remove for builds
     }
     // SCENE MANAGEMENT
     public void StartGame()  // load first scene/level
@@ -86,7 +87,7 @@ public class GameManager : MonoBehaviour
             GoldText.text = m_currentGold.ToString("N0");
             ClearDetails();    // clear the UI first
             if(m_currentGold<100)  // to avoid getting multiple calls on add gold initializer
-            AddGold(100);      // if we need to set an initial gold amount
+            AddGold(1700);      // if we need to set an initial gold amount
         }
     }
 
@@ -183,13 +184,23 @@ public class GameManager : MonoBehaviour
     {
         m_CurrentDetails = details;        
         
-        if(details.Interactable)
-        SelectionInteractable = Instantiate(m_CurrentDetails.Interactable, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).transform, false);
+        // create unit creation buttons
+            for (int i = 0; i < details.Interactable.Length; i++)
+            {
+                if(details.Interactable[i] != null)
+                SelectionInteractable[i] = Instantiate(m_CurrentDetails.Interactable[i], Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).transform, false);
+            }
+        // create upgrade button
+
+        UpgradeButton = Instantiate(m_CurrentDetails.UpgradeBtn, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(2).transform, false);
+        UpgradeButton.transform.GetComponent<AsignValue>().Upgrade = m_CurrentDetails.UpgradeCost;
+                
         
 
         SelectionThumbnail.sprite = m_CurrentDetails.Thumbnail;
         SelectionName.text = m_CurrentDetails.EntityName;
-        //SelectionProperties.text = properties;
+        
+
         SelectionDescription.text = m_CurrentDetails.Properties +"\n" +m_CurrentDetails.Description;
     }
 
@@ -197,21 +208,28 @@ public class GameManager : MonoBehaviour
     public static void ClearDetails()
     {
         if(m_CurrentDetails!=null)
-        {           
-                SelectionName.text = "";            
-                SelectionDescription.text = "";          
-                //SelectionProperties.text = "";         
-                SelectionThumbnail.sprite = GameManager.Instance.NoSelectionThumbnail;  // default black sprite for no selection
+        {
+            SelectionName.text = "";
+            SelectionDescription.text = "";
+            SelectionThumbnail.sprite = GameManager.Instance.NoSelectionThumbnail;  // default black sprite for no selection
+            Destroy(UpgradeButton);
         }
+
         
         // delete all child objects of Interactable 
-        if(SelectionInteractable != null)
-        {
-            foreach (Transform child in SelectionInteractable.transform.parent.transform)
+
+        for (int i = 0; i < SelectionInteractable.Length; i++)
             {
-            Destroy(child.gameObject);
+                if (SelectionInteractable[i] != null)
+                {
+                    foreach (Transform child in SelectionInteractable[i].transform.parent.transform)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
             }
-        }
+            
+        
     }
 
     

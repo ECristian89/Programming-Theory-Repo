@@ -32,10 +32,6 @@ public class EnemyBuilding : Building
             TotalUnits--;
         }
     }
-
-    public override string GetName()
-    {
-        return "Cave";
-    }
+   
 
 }

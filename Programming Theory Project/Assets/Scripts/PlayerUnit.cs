@@ -5,12 +5,11 @@ using UnityEngine;
 // INHERITANCE
 // Subclass of Unit that will attack enemy units in range
 public class PlayerUnit : Unit
-{    
-   
-
+{        
     private void Start()
     {
-        InitializeUnitStats("Warrior",200,3,10,1,2,42,600);
+        //InitializeUnitStats("Warrior",200,3,10,1,2,42,600);
+        InitializeUnitStats(m_UnitType);
         GoTo(transform.position + new Vector3(0,0,2));
     }
     public override void GoTo(Vector3 position)
@@ -48,5 +47,5 @@ public class PlayerUnit : Unit
                
         
     }   
-
+    
 }

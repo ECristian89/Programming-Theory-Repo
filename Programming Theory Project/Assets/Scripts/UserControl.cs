@@ -47,8 +47,32 @@ public class UserControl : MonoBehaviour
                     
                     if(detailsHit.transform.GetComponentInParent<PlayerBuilding>())
                     {
-                        GameManager.SelectionInteractable.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(
-                        detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit); 
+                        if(GameManager.UpgradeButton != null)
+                        {
+                            GameManager.UpgradeButton.transform.GetComponentInParent<Button>().onClick.AddListener(detailsHit.transform.GetComponentInParent<PlayerBuilding>().UpgradeBuilding);
+                        }
+
+
+                        // we have to make sure we asign prefabs in the inspector
+                            if (GameManager.SelectionInteractable[0] != null)
+                            {
+
+                                GameManager.SelectionInteractable[0].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
+                                {
+                                    detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit(0);
+                                });
+                            }
+
+                        if (GameManager.SelectionInteractable[1] != null)
+                        {
+
+                            GameManager.SelectionInteractable[1].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit(1);
+                            });
+                        }
+
+
                     }
                 }
                 else if(detailsHit==null)
@@ -56,6 +80,7 @@ public class UserControl : MonoBehaviour
                     GameManager.ClearDetails();
                 }
                 // if the clicked object is player unit keep track of it in Game Manager
+                // needed for Marker handling
             var unit = hit.collider.GetComponentInParent<PlayerUnit>();
                 if(unit != null)
                 {

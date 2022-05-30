@@ -6,6 +6,9 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour
 {
+    protected enum UnitType { Warrior=0,Swordsman=1,Knight=2}
+    [SerializeField]
+    protected UnitType m_UnitType;
     // ENCAPSULATION
     private int m_MaxHitPoints;
     public int MaxHitPoints
@@ -62,13 +65,12 @@ public abstract class Unit : MonoBehaviour
     public float SRange = 8.0f; // Scan range
     public float AtkRange;  // Attacking Range
     protected bool isAttacking;    
-    protected NavMeshAgent m_Agent;    
-    [SerializeField]
-    protected Unit m_Target;
-    [SerializeField]
+    protected NavMeshAgent m_Agent;  
+    protected Unit m_Target;    
     protected Building m_BTarget;    
     private HitPointsSync uiRef;
-    public GameObject HitPoint_pf; 
+    public GameObject HitPoint_pf;
+    public Sprite[] Thbnail;
     private Collider[] ScannedTargets;
     public LayerMask ScanLayer; // the layer to scan hostile targets
 
@@ -224,7 +226,7 @@ public abstract class Unit : MonoBehaviour
     }
 
     // use this in child objects to initialize
-    protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,int productionCost,int upgradeCost)
+    protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,int productionCost,int upgradeCost,Sprite thumbnail)
     {
         HitPoints = hitPoints;
         Speed = speed;
@@ -233,10 +235,11 @@ public abstract class Unit : MonoBehaviour
         AttackSpeed = attackSpeed;
         MaxHitPoints = hitPoints;
 
+
         // envelop stats in a readonly structure and send it to the details script attached to this gameObject
         if(gameObject.GetComponent<DetailsUI>()!=null)
         {
-        var stats = new Stats(unitName, hitPoints,speed, attackPower, attackSpeed,attackRange,productionCost,upgradeCost);
+        var stats = new Stats(unitName, hitPoints,speed, attackPower, attackSpeed,attackRange,productionCost,upgradeCost,thumbnail);
         SendStats(stats);
         }
         // create the visual HitPoint object for visual feedback       
@@ -245,15 +248,39 @@ public abstract class Unit : MonoBehaviour
 
     }
 
+    protected void InitializeUnitStats(UnitType unitType)
+    {
+       // m_UnitType = unitType;
+        switch(unitType)
+        {
+            case UnitType.Warrior:   
+                {
+                    InitializeUnitStats("Warrior", 200, 3, 10, 1, 2, 42, 600,Thbnail[0]);
+                    break;
+                }
+            case UnitType.Swordsman:
+                { 
+                    InitializeUnitStats("Swordsman", 240, 3, 25, 1, 2, 54, 900, Thbnail[1]);
+                    break;
+                }
+            case UnitType.Knight:
+                {                    
+                    InitializeUnitStats("Knight", 420, 2, 58, 1.3f, 2, 78, 1700, Thbnail[2]);
+                    break;
+                }
+        }
+    }
+
     void SendStats(Stats stats)
     {
         var _detail=gameObject.GetComponent<DetailsUI>();
         _detail.EntityName = stats.FullName;
         _detail.ProductionCost = stats.ProductionCost;
         _detail.UpgradeCost = stats.UpgradeCost;
-        _detail.Properties = $"HP:{stats.HP}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{2/stats.AttackSpeed}\nRange:{stats.Range} ";
+        var atkspd = (2 / stats.AttackSpeed).ToString("N1");
+        _detail.Properties = $"HP:{stats.HP}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{atkspd}\nRange:{stats.Range} ";
         _detail.Description = $"{stats.FullName}";
-        
+        _detail.Thumbnail = stats.Thumbnail;
 
     }  
 }

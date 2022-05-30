@@ -9,7 +9,7 @@ public class EnemyUnit : Unit
     private Transform DefaultDestination;
     private void Start()
     {
-        InitializeUnitStats("Daemon samurai", 100, 2.8f, 45, 2f, 2f, 50, 800);
+        InitializeUnitStats("Daemon samurai", 100, 2.8f, 45, 2f, 2f, 50, 800,Thbnail[0]);
         DefaultDestination = GameObject.Find("EnemyDestination").transform;
         goldValue = 62;
         GoTo(DefaultDestination.position);

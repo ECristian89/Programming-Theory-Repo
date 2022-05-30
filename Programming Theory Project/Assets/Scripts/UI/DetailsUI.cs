@@ -11,6 +11,7 @@ public class DetailsUI : MonoBehaviour
     public string Properties;
     public string Description;
     public Sprite Thumbnail;
-    public GameObject Interactable;
+    public GameObject[] Interactable= new GameObject[6];
+    public GameObject UpgradeBtn;
    
 }
