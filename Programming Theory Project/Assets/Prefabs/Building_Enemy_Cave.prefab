@@ -140,10 +140,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46861d6d76af52c4d84eb94ef43c5537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BuildingType: 2
   UnitPf:
   - {fileID: 7598956652431175766, guid: 03e8174326f8a2f4299ec00fbd178224, type: 3}
   - {fileID: 0}
   - {fileID: 0}
+  Thbnail:
+  - {fileID: 21300000, guid: 33bc96271c9e6064f8942b5304781171, type: 3}
+  - {fileID: 21300000, guid: ad8c3e4050c42f84386f0c67c8345da9, type: 3}
+  - {fileID: 21300000, guid: 8551fc98fad43254292257600d9fefc8, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  UpgradePf: {fileID: 0}
   SpawnPoint: {fileID: 591603984580469896}
   HitPoint_pf: {fileID: 1694940469504013105, guid: 26e0ae54724223d4b9b34f6c358e17cd, type: 3}
   SpawnRate: 20
@@ -161,10 +170,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityName: Cave
+  Description: Bandits and thieves call this their home
   ProductionCost: 0
   UpgradeCost: 0
+  CurrentHitPoints: 0
+  MaxHitPoints: 0
+  AttackPower: 0
+  AttackSpeed: 0
+  Range: 0
   Properties: HP:600 Atk:0 Range:0
-  Description: Bandits and thieves call this their home
   Thumbnail: {fileID: 21300000, guid: 8551fc98fad43254292257600d9fefc8, type: 3}
   Interactable:
   - {fileID: 0}
+  UpgradeBtn: {fileID: 0}
+  HpBar: {fileID: 0}

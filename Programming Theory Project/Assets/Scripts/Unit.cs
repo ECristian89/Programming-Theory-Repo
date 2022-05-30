@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour
@@ -24,7 +25,7 @@ public abstract class Unit : MonoBehaviour
         { 
             if(value<1)
             {
-                Debug.LogError("can't set a negative value for HitPoints");
+                Debug.LogError("can't set a negative value for HitPoints");                
             }
             else
             {
@@ -61,7 +62,7 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
-    public float Speed = 3f;
+    public float Speed = 3f;    // Movement speed
     public float SRange = 8.0f; // Scan range
     public float AtkRange;  // Attacking Range
     protected bool isAttacking;    
@@ -190,6 +191,9 @@ public abstract class Unit : MonoBehaviour
     {
         m_HitPoints -= damage;
         uiRef.UpdateValue(MaxHitPoints, HitPoints);
+        gameObject.GetComponent<DetailsUI>().CurrentHitPoints = HitPoints;
+        GameManager.UpdateUIHp();
+        
         if(m_HitPoints<=0)
         { 
             Die();            
@@ -240,7 +244,8 @@ public abstract class Unit : MonoBehaviour
         if(gameObject.GetComponent<DetailsUI>()!=null)
         {
         var stats = new Stats(unitName, hitPoints,speed, attackPower, attackSpeed,attackRange,productionCost,upgradeCost,thumbnail);
-        SendStats(stats);
+        //SendStats(stats);
+            Util.SendStats(gameObject, stats);
         }
         // create the visual HitPoint object for visual feedback       
         Util.AddHitPointVisual(HitPoint_pf, transform,ref uiRef);
@@ -274,12 +279,18 @@ public abstract class Unit : MonoBehaviour
     void SendStats(Stats stats)
     {
         var _detail=gameObject.GetComponent<DetailsUI>();
+
         _detail.EntityName = stats.FullName;
+        _detail.Description = $"{stats.FullName}";
+
         _detail.ProductionCost = stats.ProductionCost;
         _detail.UpgradeCost = stats.UpgradeCost;
-        var atkspd = (2 / stats.AttackSpeed).ToString("N1");
-        _detail.Properties = $"HP:{stats.HP}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{atkspd}\nRange:{stats.Range} ";
-        _detail.Description = $"{stats.FullName}";
+
+        _detail.MaxHitPoints = MaxHitPoints;
+        _detail.CurrentHitPoints = HitPoints;
+
+        var atkspd = (1 / stats.AttackSpeed).ToString("N1");
+        _detail.Properties = $"HP:{HitPoints}  Attack:{stats.AttackPower}\nSpeed:{stats.Speed}  Attack speed:{atkspd}\nRange:{stats.Range} ";
         _detail.Thumbnail = stats.Thumbnail;
 
     }  

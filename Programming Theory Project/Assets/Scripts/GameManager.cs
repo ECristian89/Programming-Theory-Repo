@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public static TextMeshProUGUI SelectionProduction;
     public static GameObject[] SelectionInteractable= new GameObject[6];    // clickable button/s that creat units
     public static GameObject UpgradeButton;                                 // clickable button that upgrades
+    public static GameObject HpBar;
     public static Image SelectionThumbnail;
     public static bool isCurrentPlayer = false;
     public static bool isGameStarted = false;
@@ -83,6 +84,7 @@ public class GameManager : MonoBehaviour
             SelectionDescription = Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
             SelectionThumbnail = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
             GoldText = Menu.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+            HpBar = Menu.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(2).gameObject;
 
             GoldText.text = m_currentGold.ToString("N0");
             ClearDetails();    // clear the UI first
@@ -191,10 +193,11 @@ public class GameManager : MonoBehaviour
                 SelectionInteractable[i] = Instantiate(m_CurrentDetails.Interactable[i], Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).transform, false);
             }
         // create upgrade button
-
-        UpgradeButton = Instantiate(m_CurrentDetails.UpgradeBtn, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(2).transform, false);
-        UpgradeButton.transform.GetComponent<AsignValue>().Upgrade = m_CurrentDetails.UpgradeCost;
-                
+        if (m_CurrentDetails.UpgradeBtn != null)
+        {
+            UpgradeButton = Instantiate(m_CurrentDetails.UpgradeBtn, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(2).transform, false);
+            UpgradeButton.transform.GetComponent<AsignValue>().Upgrade = m_CurrentDetails.UpgradeCost;
+        } 
         
 
         SelectionThumbnail.sprite = m_CurrentDetails.Thumbnail;
@@ -202,8 +205,21 @@ public class GameManager : MonoBehaviour
         
 
         SelectionDescription.text = m_CurrentDetails.Properties +"\n" +m_CurrentDetails.Description;
+
+        UpdateUIHp();
     }
 
+    public static void UpdateUIHp()   // sync the shown Hitpoints
+    {
+        HpBar.SetActive(true);
+        float hpVal = (float)m_CurrentDetails.CurrentHitPoints / m_CurrentDetails.MaxHitPoints;         
+        HpBar.transform.GetChild(0).transform.GetComponent<Image>().fillAmount = hpVal;
+    }
+
+    public void SetUI(ref DetailsUI details)
+    {
+        m_CurrentDetails = details;
+    }
     // use this to clear the UI
     public static void ClearDetails()
     {
@@ -213,6 +229,7 @@ public class GameManager : MonoBehaviour
             SelectionDescription.text = "";
             SelectionThumbnail.sprite = GameManager.Instance.NoSelectionThumbnail;  // default black sprite for no selection
             Destroy(UpgradeButton);
+            HpBar.SetActive(false);
         }
 
         

@@ -8,9 +8,8 @@ public class PlayerBuilding : Building
     private int[] UnitCost= new int[6];
     // Start is called before the first frame update
     void Start()
-    {
-        base.HandleVisual();
-        InitializeBuildingStats(800);
+    {        
+        InitializeBuildingStats(m_BuildingType);
 
         for (int i = 0; i < UnitCost.Length; i++)
         {

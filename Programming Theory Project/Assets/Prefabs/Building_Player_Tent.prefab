@@ -140,8 +140,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f49efb101d90f428820b6b36cb0971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BuildingType: 0
   UnitPf:
   - {fileID: 5390731335267813842, guid: 4a5bdc5ecf5da9b4198e84c98c43af78, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  Thbnail:
+  - {fileID: 21300000, guid: 33bc96271c9e6064f8942b5304781171, type: 3}
+  - {fileID: 21300000, guid: ad8c3e4050c42f84386f0c67c8345da9, type: 3}
+  - {fileID: 21300000, guid: 8551fc98fad43254292257600d9fefc8, type: 3}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   UpgradePf: {fileID: 9215647146792850705, guid: d0de3ad78d2806e41a287635a7cdab17, type: 3}
@@ -161,10 +169,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityName: Tent
+  Description: The most basic building. Creates warriors and can be upgraded to Campsite
   ProductionCost: 150
   UpgradeCost: 948
+  CurrentHitPoints: 0
+  MaxHitPoints: 0
+  AttackPower: 0
+  AttackSpeed: 0
+  Range: 0
   Properties: HP:600 Atk:0 Range:0
-  Description: The most basic building. Creates warriors and can be upgraded to Campsite
   Thumbnail: {fileID: 21300000, guid: 33bc96271c9e6064f8942b5304781171, type: 3}
   Interactable:
   - {fileID: 1544041232511584491, guid: 9509763f19d0dc24c8b1c2659c726d0f, type: 3}
@@ -174,3 +187,4 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   UpgradeBtn: {fileID: 1416544706140206157, guid: facb05965cc934349bf4aac80dc012fe, type: 3}
+  HpBar: {fileID: 0}

@@ -11,9 +11,8 @@ public class EnemyBuilding : Building
 
     // Start is called before the first frame update
     void Start()
-    {
-        base.HandleVisual();
-        InitializeBuildingStats(600);
+    {        
+        InitializeBuildingStats(m_BuildingType);
         TotalUnits = 25;
         StartCoroutine(Spawn());
     }

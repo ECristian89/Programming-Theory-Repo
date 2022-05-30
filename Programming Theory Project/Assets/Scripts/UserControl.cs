@@ -17,8 +17,9 @@ public class UserControl : MonoBehaviour
     public GameObject DestinationMarker;
 
     private Unit m_Selected = null;
+    private DetailsUI detailsHit;
 
-   
+
     void Start()
     {
         GameCamera = Camera.main;
@@ -39,13 +40,14 @@ public class UserControl : MonoBehaviour
             var unitHit= hit.collider.GetComponentInParent<Unit>();
 
             // check if the collider parent has any information for us to show in the UI
-            var detailsHit = hit.collider.GetComponentInParent<DetailsUI>();   
+             detailsHit = hit.collider.GetComponentInParent<DetailsUI>();   
                 if(detailsHit !=null)
                 {
+                    GameManager.Instance.SetUI(ref detailsHit);
                     GameManager.ClearDetails();
                     GameManager.SendDetails(detailsHit);    
                     
-                    if(detailsHit.transform.GetComponentInParent<PlayerBuilding>())
+                    if(detailsHit.transform.GetComponentInParent<PlayerBuilding>())   // GET REFERMCE TO CURRENT DETAILS IN GAME MANAGER
                     {
                         if(GameManager.UpgradeButton != null)
                         {
