@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
             GoldText.text = m_currentGold.ToString("N0");
             ClearDetails();    // clear the UI first
             if(m_currentGold<100)  // to avoid getting multiple calls on add gold initializer
-            AddGold(1700);      // if we need to set an initial gold amount
+            AddGold(3700);      // if we need to set an initial gold amount
         }
     }
 
@@ -201,11 +201,10 @@ public class GameManager : MonoBehaviour
             }
         // create upgrade button
         if (m_CurrentDetails.UpgradeBtn != null)
-        {
+        {            
             UpgradeButton = Instantiate(m_CurrentDetails.UpgradeBtn, Menu.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(2).transform, false);
             UpgradeButton.transform.GetComponent<AsignValue>().Upgrade = m_CurrentDetails.UpgradeCost;
-        } 
-        
+        }         
 
         SelectionThumbnail.sprite = m_CurrentDetails.Thumbnail;
         SelectionName.text = m_CurrentDetails.EntityName;

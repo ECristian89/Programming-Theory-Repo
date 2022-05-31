@@ -7,7 +7,9 @@ using System;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour
 {
-    protected enum UnitType { Warrior=0,Swordsman=1,Knight=2}
+    // possible player unit types :Recruit, Soldier, Archer, Knight, Cavalier, Paladin, Warlord
+    // possible enemy unit types  :Samurai, Crusher, Bandit, Outlaw, Enforcer, Skeleton, Vampire, Liche, Shadow, Gnoll, Rider, Reaver
+    protected enum UnitType { Recruit=0,Soldier=1,Archer=2,Knight=3}
     [SerializeField]
     protected UnitType m_UnitType;
     // ENCAPSULATION
@@ -53,7 +55,7 @@ public abstract class Unit : MonoBehaviour
         get { return m_AttackSpeed; }
         set { if (value < 0.1f)
             {
-                Debug.Log("can't set an AttackSPeed lower than 0.1");
+                Debug.Log("can't set an AttackSpeed lower than 0.1");
             }
         else
             {
@@ -73,10 +75,12 @@ public abstract class Unit : MonoBehaviour
     public GameObject HitPoint_pf;
     public Sprite[] Thbnail;
     private Collider[] ScannedTargets;
+    protected DetailsUI m_details;
     public LayerMask ScanLayer; // the layer to scan hostile targets
 
     private void Awake()
-    {        
+    {
+        m_details = GetComponent<DetailsUI>();
         m_Agent = GetComponent<NavMeshAgent>();
         m_Agent.speed = Speed;
         m_Agent.acceleration = 999;
@@ -90,8 +94,7 @@ public abstract class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ScanTargets(); 
-             
+        ScanTargets();              
     }
 
     // Check if any hostile targets are in the view range
@@ -191,8 +194,8 @@ public abstract class Unit : MonoBehaviour
     {
         m_HitPoints -= damage;
         uiRef.UpdateValue(MaxHitPoints, HitPoints);
-        gameObject.GetComponent<DetailsUI>().CurrentHitPoints = HitPoints;
-        if (GetComponent<DetailsUI>().Equals(GameManager.Instance.GetCurrentUI()))
+        m_details.CurrentHitPoints = HitPoints;
+        if (m_details.Equals(GameManager.Instance.GetCurrentUI()))
         {           
             if(GameManager.SelectionName.text!="")
             GameManager.UpdateUIHp();
@@ -213,7 +216,7 @@ public abstract class Unit : MonoBehaviour
         }
         Destroy(uiRef.gameObject);
             Destroy(gameObject);
-        GameManager.ClearDetails();
+        //GameManager.ClearDetails();
 
         GameManager.Instance.IsGameOver();
         GameManager.Instance.IsVictorious();
@@ -237,19 +240,19 @@ public abstract class Unit : MonoBehaviour
     // use this in child objects to initialize
     protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,int productionCost,int upgradeCost,Sprite thumbnail)
     {
+        MaxHitPoints = hitPoints;
         HitPoints = hitPoints;
         Speed = speed;
         AtkRange = attackRange;
         AttackPower = attackPower;
-        AttackSpeed = attackSpeed;
-        MaxHitPoints = hitPoints;
-
+        AttackSpeed = attackSpeed;        
+        
 
         // envelop stats in a readonly structure and send it to the details script attached to this gameObject
-        if(gameObject.GetComponent<DetailsUI>()!=null)
+        if(m_details!=null)
         {
         var stats = new Stats(unitName, hitPoints,speed, attackPower, attackSpeed,attackRange,productionCost,upgradeCost,thumbnail);
-        //SendStats(stats);
+        
             Util.SendStats(gameObject, stats);
         }
         // create the visual HitPoint object for visual feedback       
@@ -259,26 +262,146 @@ public abstract class Unit : MonoBehaviour
     }
 
     protected void InitializeUnitStats(UnitType unitType)
-    {
-       // m_UnitType = unitType;
-        switch(unitType)
+    {       
+        switch(unitType)  
         {
-            case UnitType.Warrior:   
+            case UnitType.Recruit:   
                 {
-                    InitializeUnitStats("Warrior", 200, 3, 10, 1, 2, 42, 600,Thbnail[0]);
+                    InitializeUnitStats("Recruit", 200, 3, 10, 1, 2, 42, 60,Thbnail[0]);
                     break;
                 }
-            case UnitType.Swordsman:
+            case UnitType.Soldier:
                 { 
-                    InitializeUnitStats("Swordsman", 240, 3, 25, 1, 2, 54, 900, Thbnail[1]);
+                    InitializeUnitStats("Soldier", 240, 3, 25, 1, 2, 54, 90, Thbnail[1]);
+                    break;
+                }
+            case UnitType.Archer:
+                {
+                    InitializeUnitStats("Archer", 160, 5, 14, 1.2f, 2, 48, 110, Thbnail[2]);
                     break;
                 }
             case UnitType.Knight:
                 {                    
-                    InitializeUnitStats("Knight", 420, 2, 58, 1.3f, 2, 78, 1700, Thbnail[2]);
+                    InitializeUnitStats("Knight", 420, 2, 58, 1.3f, 2, 78, 120, Thbnail[3]);
                     break;
                 }
         }
     }
+    public int UpgradeLevel = 0;
+    public void UpgradeUnit()
+    {
+        GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
+        if (GameManager.canSpendGold)
+        {
+
+            UpgradeLevel++;
+
+            // set new values for UI update (Default)
+            string UpgradeName = "Common";
+            var n_HP = HitPoints + 12;
+            var n_speed = Speed;
+            var n_AtkR = AtkRange;
+            var n_Atk = AttackPower + 1;
+            var n_AtkSpeed = AttackSpeed;
+            var n_upgrade = m_details.UpgradeCost * UpgradeLevel + 6;
+
+            switch (UpgradeLevel)
+            {
+                case 1:
+                    {
+                        UpgradeName = "Mercenary";
+                        break;
+                    }
+                case 2:
+                    {
+                        UpgradeName = "Veteran";
+                        n_HP = HitPoints + 10;
+                        n_speed = Speed + 0.1f;
+                        n_AtkR = AtkRange;
+                        n_Atk = AttackPower + 2;
+                        n_AtkSpeed = AttackSpeed - 0.05f;
+                        break;
+                    }
+                case 3:
+                    {
+                        UpgradeName = "Champion";
+                        n_HP = HitPoints + 24;
+                        n_speed = Speed + 0.1f;
+                        n_AtkR = AtkRange;
+                        n_Atk = AttackPower + 5;
+                        n_AtkSpeed = AttackSpeed - 0.08f;
+                        break;
+                    }
+                case 4:
+                    {
+                        UpgradeName = "Elite";
+                        n_HP = HitPoints + 30;
+                        n_speed = Speed + 0.1f;
+                        n_AtkR = AtkRange;
+                        n_Atk = AttackPower + 8;
+                        n_AtkSpeed = AttackSpeed - 0.12f;
+                        break;
+                    }
+                case 5:
+                    {
+                        UpgradeName = "Hero";
+                        n_HP = HitPoints + 55;
+                        n_speed = Speed + 0.2f;
+                        n_AtkR = AtkRange;
+                        n_Atk = AttackPower + 12;
+                        n_AtkSpeed = AttackSpeed - 0.15f;
+                        break;
+                    }
+                case 6:
+                    {
+                        UpgradeName = "Legendary";
+                        n_HP = HitPoints + 200;
+                        n_speed = Speed + 0.8f;
+                        n_AtkR = AtkRange;
+                        n_Atk = AttackPower + 50;
+                        n_AtkSpeed = AttackSpeed - 0.2f;
+                        break;
+                    }
+            }
+
+            if (UpgradeLevel > 6)
+            {
+                UpgradeName = "Legendary";
+            }
+
+            // test edge case and set limits
+            if (n_AtkSpeed < 0.1f)
+            {
+                n_AtkSpeed = 0.1f;
+            }
+            if (n_upgrade > 9999)
+            {
+                n_upgrade = 9990;
+            }
+
+            // asign the values 
+            AsignNewValues(UpgradeName, n_HP, n_speed, n_AtkR, n_Atk, n_AtkSpeed, n_upgrade);
+
+            Util.ShowGraphicNotification("upgraded", transform.GetComponent<DetailsUI>());
+        }
+        else Util.ShowTextNotification();
+    }
+    
+    private void AsignNewValues(string n_rankName, int n_HP, float n_speed,float n_AtkR,int n_Atk,float n_AtkSpeed,int n_upgrade)
+    {
+        HitPoints = n_HP;
+        Speed = n_speed;
+        AtkRange = n_AtkR;
+        AttackPower = n_Atk;
+        AttackSpeed = n_AtkSpeed;
+
+        if (m_details != null)
+        {
+            var stats = new Stats(n_rankName + " " + m_UnitType, n_HP, n_speed, n_Atk, n_AtkSpeed, n_AtkR, m_details.ProductionCost, n_upgrade, m_details.Thumbnail);
+            Util.SendStats(gameObject, stats); // visual only
+            MaxHitPoints = m_details.MaxHitPoints;
+        }
+    }
+
     
 }

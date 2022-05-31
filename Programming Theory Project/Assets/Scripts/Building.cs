@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
-    protected enum BuildingType { Tent=0,Campsite=1,Cave=2}
+    protected enum BuildingType { Tent=0,Campsite=1,Cave=2,Garrison=3}
     [SerializeField]
     protected BuildingType m_BuildingType;
     private int m_MaxHitPoints;
@@ -79,29 +79,37 @@ public class Building : MonoBehaviour
 
     protected void ScanTarget()
     {
-       
-        AutoAttack();
+        AttackSingle();
+        //AutoAttackAll();
     }
 
     IEnumerator InitiateAttack()
     {
         isAttacking = true;
         yield return new WaitForSecondsRealtime(AttackSpeed);
-        AutoAttack();
+        AttackSingle();
         isAttacking = false;
     }
-    private void AutoAttack()
+    private void AutoAttackAll()
     {
         if (target.Length != 0)
         {
             foreach (var item in target)
             {
                 item.transform.gameObject.GetComponentInParent<Unit>().TakeDamage(AttackPower);
-            }
-            //target[0].transform.gameObject.GetComponentInParent<Unit>().TakeDamage(AttackPower);
+            }            
         }
 
     }    
+
+    private void AttackSingle()
+    {
+        if (target.Length != 0)
+        {
+            target[0].transform.gameObject.GetComponentInParent<Unit>().TakeDamage(AttackPower);
+        }
+
+    }
     public virtual void CreateUnit()  // use this for testing and enemies
     {
         var unit=Instantiate(UnitPf[0], SpawnPoint.position, UnitPf[0].transform.rotation);        
@@ -167,17 +175,22 @@ public class Building : MonoBehaviour
         {
             case BuildingType.Tent:
                 {
-                    InitializeBuildingStats("Tent", 600, 0, 0, 2.5f, 0, 150, 948, Thbnail[0]);
+                    InitializeBuildingStats(BuildingType.Tent.ToString(), 600, 0, 0, 2.5f, 0, 150, 948, Thbnail[0]);
                     break;
                 }
             case BuildingType.Campsite:
                 {
-                    InitializeBuildingStats("Campsite", 900, 0, 15, 2.5f, 5, 1098, 1200, Thbnail[1]);
+                    InitializeBuildingStats(BuildingType.Campsite.ToString(), 900, 0, 15, 2.5f, 5, 1098, 1200, Thbnail[1]);
+                    break;
+                }
+            case BuildingType.Garrison:
+                {
+                    InitializeBuildingStats(BuildingType.Garrison.ToString(), 1440, 0, 45, 2f, 0, 2298, 2680, Thbnail[3]);
                     break;
                 }
             case BuildingType.Cave:
                 {
-                    InitializeBuildingStats("Cave", 600, 0, 0, 2.5f, 0, 150, 948, Thbnail[2]);
+                    InitializeBuildingStats(BuildingType.Cave.ToString(), 600, 0, 0, 2.5f, 0, 150, 948, Thbnail[2]);
                     break;
                 }
         }
@@ -190,8 +203,7 @@ public class Building : MonoBehaviour
         {
             GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
             if (GameManager.canSpendGold)
-            {
-                GameManager.Instance.SubtractGold(transform.GetComponent<DetailsUI>().UpgradeCost);
+            {                
                 var building = Instantiate(UpgradePf, transform.position, UpgradePf.transform.rotation);
                 GameManager.ClearDetails();
                 Util.ShowGraphicNotification("upgraded", transform.GetComponent<DetailsUI>());

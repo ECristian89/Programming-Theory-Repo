@@ -36,14 +36,20 @@ public class Util : MonoBehaviour
         _detail.ProductionCost = stats.ProductionCost;
         _detail.UpgradeCost = stats.UpgradeCost;
 
-        _detail.MaxHitPoints = stats.HP;
+        if (_detail.MaxHitPoints <= stats.HP)
+        {
+            _detail.MaxHitPoints = stats.HP;
+        }
+        else
+            _detail.MaxHitPoints += 20;
+
         _detail.CurrentHitPoints = stats.HP;
 
         _detail.Speed = stats.Speed;
         _detail.AttackPower = stats.AttackPower;
         _detail.AttackSpeed = 1 / stats.AttackSpeed;
         _detail.Thumbnail = stats.Thumbnail;
-    }
+    }    
 
     public static void ShowGraphicNotification(string message,DetailsUI icon)
     {
@@ -53,6 +59,6 @@ public class Util : MonoBehaviour
     public static void ShowTextNotification()  // can be extended for custom text message max:25 chars
     {
         GameManager.Instance.ShowNotification(GameManager.Instance.NotificationPf[0]);
-    }
+    }   
    
 }

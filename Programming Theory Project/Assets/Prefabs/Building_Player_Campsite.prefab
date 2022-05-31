@@ -235,7 +235,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  UpgradePf: {fileID: 0}
+  UpgradePf: {fileID: 3436091975031627138, guid: 1e719c67fa4ad92408a3d630b70b21a7, type: 3}
   SpawnPoint: {fileID: 591603984580469896}
   target: []
   HitPoint_pf: {fileID: 1694940469504013105, guid: 26e0ae54724223d4b9b34f6c358e17cd, type: 3}

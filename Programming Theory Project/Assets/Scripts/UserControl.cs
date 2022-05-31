@@ -26,14 +26,30 @@ public class UserControl : MonoBehaviour
         Marker.SetActive(false);        
     }
 
+    public void RefreshUI()
+    {        
+        GameManager.ClearDetails();     
+        GameManager.SendDetails(detailsHit); 
+    }
+
+    private void UpdateUpgradeButton()
+    {
+        if (GameManager.UpgradeButton != null)
+        {           
+            GameManager.UpgradeButton.transform.GetComponentInParent<Button>().onClick.AddListener(detailsHit.transform.GetComponentInParent<PlayerUnit>().UpgradeUnit);            
+            GameManager.UpgradeButton.transform.GetComponentInParent<Button>().onClick.AddListener(RefreshUI);
+            
+        }
+        GameManager.isCurrentPlayer = true;
+    }
     void HandleSelection()
     {
         var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
-
+        var pos = Input.mousePosition;
         // limit the area where raycasts are cast
         if (Input.mousePosition.y > Screen.height / 5)
         {
-        RaycastHit hit;
+        RaycastHit hit;  // save a copy need to simulate hitting the same object
         if (Physics.Raycast(ray, out hit))
         {           
             // collider could be children of the unit, so we make sure to check in the parent            
@@ -44,6 +60,9 @@ public class UserControl : MonoBehaviour
                 if(detailsHit !=null)
                 {                   
                     GameManager.Instance.SetUI(ref detailsHit);
+                    // refresh the UI content
+
+                    //RefreshUI();
                     GameManager.ClearDetails();
                     GameManager.SendDetails(detailsHit);    
                     
@@ -86,7 +105,8 @@ public class UserControl : MonoBehaviour
             var unit = hit.collider.GetComponentInParent<PlayerUnit>();
                 if(unit != null)
                 {
-                    GameManager.isCurrentPlayer = true;
+                    // asign events to Upgrade button of PlayerUnit
+                    UpdateUpgradeButton();                    
                 }
                 else
                 {
