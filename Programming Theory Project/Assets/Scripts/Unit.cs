@@ -65,10 +65,12 @@ public abstract class Unit : MonoBehaviour
     }
 
     public float Speed = 3f;    // Movement speed
-    public float SRange = 8.0f; // Scan range
+    public float SRange = 8.0f; // Scan range must be greater than 0 for this unit to attack
     public float AtkRange;  // Attacking Range
-    protected bool isAttacking;   
+    protected bool isAttacking;
+    public bool isRetreating;
     protected NavMeshAgent m_Agent;  
+    [SerializeField]
     protected Unit m_Target;    
     protected Building m_BTarget;    
     private HitPointsSync uiRef;
@@ -78,6 +80,15 @@ public abstract class Unit : MonoBehaviour
     protected DetailsUI m_details;
     public LayerMask ScanLayer; // the layer to scan hostile targets
 
+    Transform myTransform;
+    Vector3 lastPos;   
+
+    public IEnumerator issueOrder()
+    {
+        isRetreating = true;
+        yield return new WaitForSeconds(1.2f);
+        isRetreating = false;
+    }
     private void Awake()
     {
         m_details = GetComponent<DetailsUI>();
@@ -85,26 +96,35 @@ public abstract class Unit : MonoBehaviour
         m_Agent.speed = Speed;
         m_Agent.acceleration = 999;
         m_Agent.angularSpeed = 999;
+
+        myTransform = transform;
+        lastPos = myTransform.position;
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position +transform.forward*1.0f,transform.lossyScale.x*2*SRange);        
+        Gizmos.DrawWireSphere(transform.position +transform.forward*1.0f,transform.lossyScale.x*2*SRange);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position,transform.lossyScale.x*AtkRange);
     }
+
     // Update is called once per frame
     void Update()
     {
-        ScanTargets();              
+        if(!isRetreating)
+            ScanTargets();
+       
     }
 
     // Check if any hostile targets are in the view range
     protected virtual void ScanTargets()
     {
-        ScannedTargets = Physics.OverlapSphere(transform.position, SRange,ScanLayer);
-
+        ScannedTargets = Physics.OverlapSphere(transform.position, transform.lossyScale.x*2*SRange,ScanLayer);
+        //Debug.LogFormat($"Scan range: {transform.lossyScale.x*SRange}");
         foreach (var item in ScannedTargets)
         {
             m_Target = item.transform.gameObject.GetComponentInParent<Unit>();
+            //Debug.DrawLine(transform.position, m_Target.transform.position, Color.red, 1f);
             m_BTarget = item.transform.gameObject.GetComponentInParent<Building>();
             CheckTarget(m_Target, m_BTarget);
         }
@@ -118,8 +138,8 @@ public abstract class Unit : MonoBehaviour
         {
             GoTo(target);
             float distance = Vector3.Distance(m_Target.transform.position, transform.position);
-            if (distance < 1.2f)  // replace with unit attack range
-            {
+            if (distance < AtkRange)  // replace with unit attack range
+            {               
                 m_Agent.isStopped = true;
                 TargetInRange();
             }
@@ -128,7 +148,7 @@ public abstract class Unit : MonoBehaviour
         {
             GoTo(Btarget);
             float distance = Vector3.Distance(m_BTarget.transform.position, transform.position);
-            if (distance < 2.8f) // replace with building attack range
+            if (distance < AtkRange + 1.6f) // replace with building attack range
             {
                 m_Agent.isStopped = true;
                 TargetInRange();
@@ -189,6 +209,20 @@ public abstract class Unit : MonoBehaviour
           //  Debug.Log($"{target} was attacked with {AttackPower} attack power.");            
         }
     }
+    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Unit target)
+    {
+        yield return new WaitForSeconds(attackSpeed);
+        Attack(attackPower, target);
+        isAttacking = false;
+    }
+
+    // overload with building type
+    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Building target)
+    {
+        yield return new WaitForSeconds(attackSpeed);
+        Attack(attackPower, target);
+        isAttacking = false;
+    }
 
     public virtual void TakeDamage(int damage)
     {
@@ -220,25 +254,12 @@ public abstract class Unit : MonoBehaviour
 
         GameManager.Instance.IsGameOver();
         GameManager.Instance.IsVictorious();
-    }    
-
-    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Unit target)
-    {
-        yield return new WaitForSeconds(attackSpeed);        
-        Attack(attackPower, target);
-        isAttacking = false;
     }
 
-    // overload with building type
-    protected IEnumerator InitiateAttack(int attackPower, float attackSpeed, Building target)
-    {
-        yield return new WaitForSeconds(attackSpeed);
-        Attack(attackPower, target);
-        isAttacking = false;
-    }
 
-    // use this in child objects to initialize
-    protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,int productionCost,int upgradeCost,Sprite thumbnail)
+
+    // use this in child objects to initialize  Default ScanRange applies
+    protected void InitializeUnitStats(string unitName, int hitPoints, float speed, int attackPower, float attackSpeed, float attackRange, int productionCost, int upgradeCost, Sprite thumbnail)
     {
         MaxHitPoints = hitPoints;
         HitPoints = hitPoints;
@@ -246,7 +267,29 @@ public abstract class Unit : MonoBehaviour
         AtkRange = attackRange;
         AttackPower = attackPower;
         AttackSpeed = attackSpeed;        
-        
+
+        // envelop stats in a readonly structure and send it to the details script attached to this gameObject
+        if (m_details != null)
+        {
+            var stats = new Stats(unitName, hitPoints, speed, attackPower, attackSpeed, attackRange, productionCost, upgradeCost, thumbnail);
+
+            Util.SendStats(gameObject, stats);
+        }
+        // create the visual HitPoint object for visual feedback       
+        Util.AddHitPointVisual(HitPoint_pf, transform, ref uiRef);
+
+    }
+
+    // same function with custom ScanRange
+    protected void InitializeUnitStats(string unitName,int hitPoints,float speed, int attackPower, float attackSpeed,float attackRange,float scanRange,int productionCost,int upgradeCost,Sprite thumbnail)
+    {
+        MaxHitPoints = hitPoints;
+        HitPoints = hitPoints;
+        Speed = speed;
+        AtkRange = attackRange;
+        AttackPower = attackPower;
+        AttackSpeed = attackSpeed;
+        SRange = scanRange;
 
         // envelop stats in a readonly structure and send it to the details script attached to this gameObject
         if(m_details!=null)
@@ -267,22 +310,22 @@ public abstract class Unit : MonoBehaviour
         {
             case UnitType.Recruit:   
                 {
-                    InitializeUnitStats("Recruit", 200, 3, 10, 1, 2, 42, 60,Thbnail[0]);
+                    InitializeUnitStats("Recruit", 200, 3, 10, 1, 1.2f, 42, 60,Thbnail[0]);
                     break;
                 }
             case UnitType.Soldier:
                 { 
-                    InitializeUnitStats("Soldier", 240, 3, 25, 1, 2, 54, 90, Thbnail[1]);
+                    InitializeUnitStats("Soldier", 240, 3, 25, 1, 1.2f, 54, 90, Thbnail[1]);
                     break;
                 }
             case UnitType.Archer:
                 {
-                    InitializeUnitStats("Archer", 160, 5, 14, 1.2f, 2, 48, 110, Thbnail[2]);
+                    InitializeUnitStats("Archer", 75, 3.5f, 14, 0.8f, 12f, 48, 110, Thbnail[2]);
                     break;
                 }
             case UnitType.Knight:
                 {                    
-                    InitializeUnitStats("Knight", 420, 2, 58, 1.3f, 2, 78, 120, Thbnail[3]);
+                    InitializeUnitStats("Knight", 420, 2, 58, 1.3f, 1.2f, 78, 120, Thbnail[3]);
                     break;
                 }
         }

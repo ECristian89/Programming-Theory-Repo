@@ -9,9 +9,11 @@ public class EnemyBuilding : Building
     [SerializeField]
     private int TotalUnits;
     private bool hasSpawnBurst;
+    public bool RandomizeSpawns;
     public GameObject CameraRightLimit;
     public GameObject[] SectionPf;
-    private float[] Section = new float[5]; 
+    private float[] Section = new float[5];
+    protected int goldValue;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,7 @@ public class EnemyBuilding : Building
         TotalUnits = 25;
         StartCoroutine(Spawn());
         Section[0] = 152f;
+        goldValue = 420;
     }
     
    IEnumerator Spawn()
@@ -29,6 +32,10 @@ public class EnemyBuilding : Building
         yield return new WaitForSeconds(SpawnRate);
         CreateUnit();
             TotalUnits--;
+            if(RandomizeSpawns)
+            {
+                SpawnRate = Random.Range(1.5f, 7f);
+            }
         }
     }
 
@@ -59,5 +66,10 @@ public class EnemyBuilding : Building
             if (SectionPf != null && CameraRightLimit != null)
                 OpenNextSection(SectionPf[0],Section[0]);
         }
+    }
+    protected override void GetDestroyed()
+    {
+        base.GetDestroyed();
+        GameManager.Instance.AddGold(goldValue);
     }
 }

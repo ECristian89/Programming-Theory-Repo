@@ -116,9 +116,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator CountEnemyUnits() //count enemy's units and buildings
     {
+        CheckUI();
         yield return new WaitForEndOfFrame();
         var unitsCount = GameObject.FindObjectsOfType<EnemyUnit>().Length;
         var buildingsCount = GameObject.FindObjectsOfType<EnemyBuilding>().Length;
+
 
         //Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
         //Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
@@ -130,11 +132,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void CheckUI()  // if current UI has a selected object that is no longer in the game, refresh it
+    {       
+        if(m_CurrentDetails.CurrentHitPoints<=0)
+        {
+            ClearDetails();
+        }
+    }
     private IEnumerator CountPlayerUnits() // count player's units and buildings
     {
+        CheckUI();
         yield return new WaitForEndOfFrame();
         var unitsCount=GameObject.FindObjectsOfType<PlayerUnit>().Length;
         var buildingsCount = GameObject.FindObjectsOfType<PlayerBuilding>().Length;
+
 
         //Debug.LogFormat($"Player units remaining: {unitsCount}");                   // could add a UI element to give feedback to the player
        // Debug.LogFormat($"Player buildings remaining: {buildingsCount}");
@@ -224,7 +235,7 @@ public class GameManager : MonoBehaviour
         DetailBg.SetActive(true);
         float hpVal = (float)m_CurrentDetails.CurrentHitPoints / m_CurrentDetails.MaxHitPoints;         
         HpBar.transform.GetChild(0).transform.GetComponent<Image>().fillAmount = hpVal;
-        SelectionProperty[0].text = m_CurrentDetails.CurrentHitPoints + "/" + m_CurrentDetails.MaxHitPoints;
+        SelectionProperty[0].text = m_CurrentDetails.CurrentHitPoints + "/" + m_CurrentDetails.MaxHitPoints;        
     }
 
     public void SetUI(ref DetailsUI details)

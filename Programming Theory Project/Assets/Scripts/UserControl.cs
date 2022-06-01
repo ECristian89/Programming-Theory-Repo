@@ -93,6 +93,15 @@ public class UserControl : MonoBehaviour
                             });
                         }
 
+                        if (GameManager.SelectionInteractable[2] != null)
+                        {
+
+                            GameManager.SelectionInteractable[2].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                detailsHit.transform.GetComponentInParent<PlayerBuilding>().CreateUnit(2);
+                            });
+                        }
+
 
                     }
                 }
@@ -163,6 +172,7 @@ public class UserControl : MonoBehaviour
             }
             else
             {
+                StartCoroutine(m_Selected.issueOrder());
                 m_Selected.GoTo(hit.point);
                 // show click feedback for the user
                 DestinationMarker.transform.position = hit.point + new Vector3(0,0.67f,0);

@@ -120,7 +120,7 @@ public class Building : MonoBehaviour
         var unit = Instantiate(UnitPf[index], SpawnPoint.position, UnitPf[index].transform.rotation);
     }
 
-    private void GetDestroyed()
+    protected virtual void GetDestroyed()
     {
         Destroy(uiRef.gameObject);
         Destroy(gameObject);

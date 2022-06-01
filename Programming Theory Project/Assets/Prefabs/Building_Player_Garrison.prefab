@@ -1,5 +1,55 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2106689332226155864
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3759056918569583182}
+  - component: {fileID: 2243965257066432282}
+  m_Layer: 0
+  m_Name: Projector (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3759056918569583182
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106689332226155864}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 5.474315, z: 0}
+  m_LocalScale: {x: 0.22329469, y: 0.2486564, z: 0.28571433}
+  m_Children: []
+  m_Father: {fileID: 6029983468293270324}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!119 &2243965257066432282
+Projector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106689332226155864}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_NearClipPlane: 0.1
+  m_FarClipPlane: 50
+  m_FieldOfView: 95.6
+  m_AspectRatio: 1
+  m_Orthographic: 1
+  m_OrthographicSize: 30
+  m_Material: {fileID: 2100000, guid: f3726ec6361236743a4403281c0d8793, type: 2}
+  m_IgnoreLayers:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &3436091975031627138
 GameObject:
   m_ObjectHideFlags: 0
@@ -34,6 +84,7 @@ Transform:
   m_Children:
   - {fileID: 6376588558565993499}
   - {fileID: 56816262216459272}
+  - {fileID: 3759056918569583182}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 12, z: 0}
@@ -116,7 +167,7 @@ MonoBehaviour:
   UnitPf:
   - {fileID: 5390731335267813842, guid: 4a5bdc5ecf5da9b4198e84c98c43af78, type: 3}
   - {fileID: 5839149492546435871, guid: 3b9f18be22c118f4dace68a24f193175, type: 3}
-  - {fileID: 0}
+  - {fileID: 4005599898209887489, guid: 099df269a33a20747abce9e1c945f9dc, type: 3}
   Thbnail:
   - {fileID: 21300000, guid: 33bc96271c9e6064f8942b5304781171, type: 3}
   - {fileID: 21300000, guid: ad8c3e4050c42f84386f0c67c8345da9, type: 3}
@@ -159,7 +210,7 @@ MonoBehaviour:
   Interactable:
   - {fileID: 1544041232511584491, guid: 9509763f19d0dc24c8b1c2659c726d0f, type: 3}
   - {fileID: 5724958855209116300, guid: 5ffbce1ca70197c418f003a71599c097, type: 3}
-  - {fileID: 0}
+  - {fileID: 5754341359684069155, guid: e343e7a0b616cb14cb95bbfd056e43e1, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
