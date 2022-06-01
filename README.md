@@ -6,3 +6,4 @@ Graphics used in this project are free assets under attribution requirement
 # Icons made by Max.icons from www.flaticon.com
 # Icons made by Freepik from www.flaticon.com
 # Icons made by surang from www.flaticon.com
+# Icons made by Gregor Cresnar from www.flaticon.com
